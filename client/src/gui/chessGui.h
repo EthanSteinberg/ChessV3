@@ -10,8 +10,7 @@ public:
    t_chessGui() 
    {}
 
-   void run()
-   {}
+   void run();
          
 private:
 };
