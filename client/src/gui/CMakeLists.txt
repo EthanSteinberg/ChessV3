@@ -7,4 +7,4 @@ set(SRCS
 )
 
 add_library(ChessGui ${HDRS} ${SRCS})
-#target_link_libraries(ChessGui )
+target_link_libraries(ChessGui ${SFML_LIBRARY})

@@ -22,6 +22,13 @@ set(BOOST_COMPONENTS system thread date_time filesystem)
 find_package(Boost COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
+find_package(SFML REQUIRED)
+include_directories(${SFML_INCLUDE_DIR})
+
+set(CEGUI_DIR lib/CEGUI-.0.7.5)
+find_package(CEGUI REQUIRED)
+include_directories(${CEGUI_INCLUDE_DIR})
+
 add_subdirectory(client) 
 
 #Not even started yet, lol
