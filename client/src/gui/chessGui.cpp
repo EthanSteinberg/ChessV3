@@ -1,11 +1,26 @@
 #include "chessGui.h"
 
 #include <SFML/Graphics.hpp>
+#include <CEGUI/CEGUI.h>
+#include <CEGUI/RendererModules/OpenGL/CEGUIOpenGLRenderer.h>
 
 #include <iostream>
 void t_chessGui::run()
 {
+   chessCegui.init();
+
    sf::RenderWindow App(sf::VideoMode(800,800,32), "Testing Window");   
+
+   CEGUI::OpenGLRenderer& myRenderer = CEGUI::OpenGLRenderer::bootstrapSystem();
+
+
+   CEGUI::SchemeManager::getSingleton().create( "TaharezLook.scheme" );
+
+   CEGUI::Window* myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( "test.layout" );
+
+   CEGUI::System &mySystem = CEGUI::System::getSingleton();
+   
+   mySystem.setGUISheet( myRoot );
 
    sf::Event event;
    sf::Shape RedBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,0,0));
@@ -18,6 +33,16 @@ void t_chessGui::run()
       {
          if (event.Type == sf::Event::Closed)
             App.Close();
+
+         else if(event.Type == sf::Event::MouseMoved)
+            mySystem.injectMousePosition( event.MouseMove.X,event.MouseMove.Y  );  
+
+         else if(event.Type == sf::Event::MouseButtonPressed)
+            mySystem.injectMouseButtonDown(chessCegui.mouse(event.MouseButton.Button));
+         
+         else if(event.Type == sf::Event::MouseButtonReleased)
+            mySystem.injectMouseButtonUp(chessCegui.mouse(event.MouseButton.Button));
+            
       }
 
       App.Clear();
@@ -42,7 +67,7 @@ void t_chessGui::run()
 
          }
       }
-
+      CEGUI::System::getSingleton().renderGUI();
       App.Display();
    }
 

@@ -4,6 +4,8 @@
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "chessCegui.h"
+
 class t_chessGui : boost::noncopyable
 {
 public:
@@ -13,6 +15,7 @@ public:
    void run();
          
 private:
+   t_chessCegui chessCegui;
 };
 
 #endif
