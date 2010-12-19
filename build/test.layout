@@ -1,14 +1,9 @@
 <?xml version="1.0" ?>
 <GUILayout>
     <Window Type="DefaultWindow" Name="root">
-        <Window Type="TaharezLook/FrameWindow" Name="testWindow">
-            <Property Name="UnifiedPosition" Value="{ {0.25, 0}, {0.25, 0} }" />
-            <Property Name="UnifiedSize" Value="{ {0.5, 0}, {0.5, 0} }" />
-            <Property Name="Text" Value="Hello World!" />
-        </Window>
         <Window Type="TaharezLook/Menubar" Name="testWindow2">
             <Property Name="UnifiedPosition" Value="{ {0, 0}, {0, 0} }" />
-            <Property Name="UnifiedSize" Value="{ {1, 0}, {0, 20} }" />
+            <Property Name="UnifiedSize" Value="{ {1, 0}, {0.0243902439, 0} }" />
             <Property Name="Text" Value="Hello World!(again)" />
 		<Window Type="TaharezLook/MenuItem" Name="Root/FrameWindow/Menubar/File" >
                     <Property Name="Text" Value="File" />
