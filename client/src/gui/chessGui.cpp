@@ -9,7 +9,7 @@ void t_chessGui::run()
 {
    chessCegui.init();
 
-   sf::RenderWindow App(sf::VideoMode(800,800,32), "Testing Window");   
+   sf::RenderWindow App(sf::VideoMode(800,820,32), "Testing Window");   
 
    CEGUI::OpenGLRenderer& myRenderer = CEGUI::OpenGLRenderer::bootstrapSystem();
 
@@ -28,7 +28,11 @@ void t_chessGui::run()
    
    while (App.IsOpened())
    {
-      
+
+      int newWidth;
+      int newHeight; 
+      bool resized = 0;      
+
       while (App.GetEvent(event))
       {
          if (event.Type == sf::Event::Closed)
@@ -42,8 +46,18 @@ void t_chessGui::run()
          
          else if(event.Type == sf::Event::MouseButtonReleased)
             mySystem.injectMouseButtonUp(chessCegui.mouse(event.MouseButton.Button));
-            
+
+         else if(event.Type == sf::Event::Resized)
+         {
+            resized = 1;
+            newWidth = event.Size.Width;
+            newHeight = event.Size.Height;
+         }
       }
+
+      if (resized)
+         mySystem.notifyDisplaySizeChanged(CEGUI::Size(newWidth,newHeight));
+      
 
       App.Clear();
       int width = 100;
@@ -55,13 +69,13 @@ void t_chessGui::run()
          {
             if ((x+y)%2)
             {
-               BlackBox.SetPosition(x*width,y*height);
+               BlackBox.SetPosition(x*width,y*height +20);
                App.Draw(BlackBox);
             }
 
             else 
             {
-               RedBox.SetPosition(x*width,y*height);
+               RedBox.SetPosition(x*width,y*height + 20);
                App.Draw(RedBox);
             }
 
