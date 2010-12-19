@@ -1,4 +1,7 @@
 #include "chessGui.h"
+#include "chessServer.h"
+
+#include "../messages.h"
 
 #include <SFML/Graphics.hpp>
 #include <CEGUI/CEGUI.h>
@@ -14,6 +17,7 @@ void t_chessGui::run()
 {
    chessCegui.init();
    loadImages();
+   loadSprites();
 
    CEGUI::OpenGLRenderer &myRenderer = CEGUI::OpenGLRenderer::bootstrapSystem();
 
@@ -22,17 +26,21 @@ void t_chessGui::run()
    CEGUI::Window *myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout("test.layout");
 
    CEGUI::System &mySystem = CEGUI::System::getSingleton();
+   CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
 
    mySystem.setGUISheet(myRoot);
+
+   CEGUI::FrameWindow *fWnd = static_cast<CEGUI::FrameWindow *>(wmgr.loadWindowLayout("lols.layout"));
+   myRoot->addChildWindow(fWnd);
+
+   //fWnd->hide();
 
    sf::Event event;
    RedBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,0,0));
    BlackBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(0,255,0));
 
-
    while (App.IsOpened())
    {
-
       int newWidth;
       int newHeight;
       bool resized = 0;
@@ -86,9 +94,6 @@ void t_chessGui::run()
 
 void t_chessGui::drawBoard()
 {
-   int width = 100;
-   int height = 100;
-
    for (int y = 0; y<8; y++)
    {
       for (int x =0 ; x<8; x++)
@@ -108,7 +113,10 @@ void t_chessGui::drawBoard()
       }
    }
 
-   App.Draw(testSpr);
+   for (int i =0; i<32; i++)
+   {
+      App.Draw(sprites[i]);
+   }
 }
 
 void t_chessGui::loadImages()
@@ -126,6 +134,64 @@ void t_chessGui::loadImages()
 
 void t_chessGui::loadSprites()
 {
-   testSpr.SetImage(images[3]);
-   testSpr.SetPosition(0,20);
+   for (int i = 0; i<8; i++)
+   {
+      sprites[i].SetImage(images[0]);
+      sprites[i].SetPosition(i * width,height*6 + 20);
+   }
+
+   sprites[8].SetImage(images[3]);
+   sprites[8].SetPosition(0 * width,height*7 + 20);
+
+   sprites[9].SetImage(images[1]);
+   sprites[9].SetPosition(1 * width,height*7 + 20);
+
+   sprites[10].SetImage(images[2]);
+   sprites[10].SetPosition(2 * width,height*7 + 20);
+
+   sprites[11].SetImage(images[5]);
+   sprites[11].SetPosition(3 * width,height*7 + 20);
+
+   sprites[12].SetImage(images[4]);
+   sprites[12].SetPosition(4 * width,height*7 + 20);
+
+   sprites[13].SetImage(images[2]);
+   sprites[13].SetPosition(5 * width,height*7 + 20);
+
+   sprites[14].SetImage(images[1]);
+   sprites[14].SetPosition(6 * width,height*7 + 20);
+
+   sprites[15].SetImage(images[3]);
+   sprites[15].SetPosition(7 * width,height*7 + 20);
+
+   //Load blacks
+   for (int i = 0; i<8; i++)
+   {
+      sprites[i+16].SetImage(images[6]);
+      sprites[i+16].SetPosition(i * width,height*1 + 20);
+   }
+
+   sprites[24].SetImage(images[9]);
+   sprites[24].SetPosition(0 * width,height*0 + 20);
+
+   sprites[25].SetImage(images[7]);
+   sprites[25].SetPosition(1 * width,height*0 + 20);
+
+   sprites[26].SetImage(images[8]);
+   sprites[26].SetPosition(2 * width,height*0 + 20);
+
+   sprites[27].SetImage(images[11]);
+   sprites[27].SetPosition(3 * width,height*0 + 20);
+
+   sprites[28].SetImage(images[10]);
+   sprites[28].SetPosition(4 * width,height*0 + 20);
+
+   sprites[29].SetImage(images[8]);
+   sprites[29].SetPosition(5 * width,height*0 + 20);
+
+   sprites[30].SetImage(images[7]);
+   sprites[30].SetPosition(6 * width,height*0 + 20);
+
+   sprites[31].SetImage(images[9]);
+   sprites[31].SetPosition(7 * width,height*0 + 20);
 }
