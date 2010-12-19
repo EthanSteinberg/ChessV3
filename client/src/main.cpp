@@ -4,16 +4,20 @@
 #include "gui/chessGui.h"
 #include "cli/chessCli.h"
 
+#include "messages.h"
+
 using std::vector;
 using std::cout;
 using std::endl;
 
 int main(int argv, char **argc)
 {
+   t_sharedData sharedData;
+
    try
    {
-      t_chessGui gui;
-      t_chessCli cli;
+      t_chessGui gui(sharedData);
+      t_chessCli cli(sharedData);
 
       gui.run();
    }

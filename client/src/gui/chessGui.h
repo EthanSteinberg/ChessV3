@@ -9,16 +9,19 @@
 
 #include "chessCegui.h"
 
+class t_sharedData;
+
 class t_chessGui : boost::noncopyable
 {
 public:
-   t_chessGui();
+   t_chessGui(t_sharedData &theSharedData);
 
    void run();
 
 private:
    void drawBoard();
    void loadImages();
+   void loadSprites();
 
    t_chessCegui chessCegui;
 

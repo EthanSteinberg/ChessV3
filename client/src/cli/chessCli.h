@@ -4,10 +4,12 @@
 #include <boost/utility.hpp>
 #include <iostream>
 
+class t_sharedData;
+
 class t_chessCli : boost::noncopyable
 {
 public:
-   t_chessCli()
+   t_chessCli(t_sharedData &theSharedData)
    {}
    
    ~t_chessCli()

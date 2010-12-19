@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-t_chessGui::t_chessGui() : App(sf::VideoMode(800,820,32), "Testing Window")
+t_chessGui::t_chessGui(t_sharedData &theSharedData) : App(sf::VideoMode(800,820,32), "Testing Window")
 {
 }
 
@@ -15,22 +15,20 @@ void t_chessGui::run()
    chessCegui.init();
    loadImages();
 
-   CEGUI::OpenGLRenderer& myRenderer = CEGUI::OpenGLRenderer::bootstrapSystem();
+   CEGUI::OpenGLRenderer &myRenderer = CEGUI::OpenGLRenderer::bootstrapSystem();
 
-   CEGUI::SchemeManager::getSingleton().create( "TaharezLook.scheme" );
+   CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
 
-   CEGUI::Window* myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout( "test.layout" );
+   CEGUI::Window *myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout("test.layout");
 
    CEGUI::System &mySystem = CEGUI::System::getSingleton();
 
-   mySystem.setGUISheet( myRoot );
+   mySystem.setGUISheet(myRoot);
 
    sf::Event event;
    RedBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,0,0));
    BlackBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(0,255,0));
 
-   testSpr.SetImage(images[3]);
-   testSpr.SetPosition(0,20);
 
    while (App.IsOpened())
    {
@@ -42,18 +40,26 @@ void t_chessGui::run()
       while (App.GetEvent(event))
       {
          if (event.Type == sf::Event::Closed)
+         {
             App.Close();
+         }
 
-         else if(event.Type == sf::Event::MouseMoved)
-            mySystem.injectMousePosition( event.MouseMove.X,event.MouseMove.Y  );
+         else if (event.Type == sf::Event::MouseMoved)
+         {
+            mySystem.injectMousePosition(event.MouseMove.X,event.MouseMove.Y);
+         }
 
-         else if(event.Type == sf::Event::MouseButtonPressed)
+         else if (event.Type == sf::Event::MouseButtonPressed)
+         {
             mySystem.injectMouseButtonDown(chessCegui.mouse(event.MouseButton.Button));
+         }
 
-         else if(event.Type == sf::Event::MouseButtonReleased)
+         else if (event.Type == sf::Event::MouseButtonReleased)
+         {
             mySystem.injectMouseButtonUp(chessCegui.mouse(event.MouseButton.Button));
+         }
 
-         else if(event.Type == sf::Event::Resized)
+         else if (event.Type == sf::Event::Resized)
          {
             resized = 1;
             newWidth = event.Size.Width;
@@ -62,7 +68,9 @@ void t_chessGui::run()
       }
 
       if (resized)
+      {
          mySystem.notifyDisplaySizeChanged(CEGUI::Size(newWidth,newHeight));
+      }
 
       App.Clear();
 
@@ -114,4 +122,10 @@ void t_chessGui::loadImages()
       images[i].LoadFromFile(buffer);
    }
 
+}
+
+void t_chessGui::loadSprites()
+{
+   testSpr.SetImage(images[3]);
+   testSpr.SetPosition(0,20);
 }
