@@ -8,7 +8,7 @@ set(SRCS
 )
 
 
-add_executable(ChessClient ${HDRS} ${SRCS})
-target_link_libraries(ChessClient ChessCli ChessGui)
+add_executable(ChessServer ${HDRS} ${SRCS})
+target_link_libraries(ChessServer ChessNetwork)
 
 add_subdirectory(src)

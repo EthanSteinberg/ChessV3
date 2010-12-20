@@ -30,8 +30,6 @@ find_package(CEGUI REQUIRED)
 include_directories(${CEGUI_INCLUDE_DIR})
 
 add_subdirectory(client) 
-
-#Not even started yet, lol
-#add_subdirectory(server) 
+add_subdirectory(server) 
 
 
