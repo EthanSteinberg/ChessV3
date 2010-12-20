@@ -19,9 +19,15 @@ public:
    void run();
 
 private:
+   void processEvents();
    void drawBoard();
+   
    void loadImages();
    void loadSprites();
+
+   void initServer();
+   void initConnect();
+   void initCegui();
 
    t_chessCegui chessCegui;
 
@@ -33,6 +39,13 @@ private:
 
    sf::Shape BlackBox;
    sf::Shape RedBox;
+
+   CEGUI::Window *myRoot;
+   CEGUI::System *mySystem;
+   CEGUI::WindowManager *wmgr;
+
+   t_sharedData &sharedData;
+
 
    const static int width = 100;
    const static int height = 100;

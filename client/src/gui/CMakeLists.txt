@@ -1,7 +1,6 @@
 set(HDRS 
       chessGui.h
       chessCegui.h
-      chessServer.h
       )
  
 set(SRCS

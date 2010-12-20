@@ -1,4 +1,8 @@
-#include "chessServer.h"
+#include "chessGui.h"
+
+#include "../messages.h"
+
+#include <boost/bind.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <CEGUI/CEGUI.h>
@@ -6,61 +10,67 @@
 
 #include <iostream>
 
-#include <boost/thread.hpp>
-
-t_chessServer::t_chessServer(t_sharedData &theSharedData) : App(sf::VideoMode(800,820,32), "Testing Window")
+bool openServer(CEGUI::FrameWindow *server, const CEGUI::EventArgs &e)
 {
-   chessCegui.init();
+   server->show();
+   return true;
 }
 
-void t_chessServer::run()
+bool closeServer(CEGUI::FrameWindow *server, const CEGUI::EventArgs &e)
 {
-   CEGUI::System &mySystem = CEGUI::System::getSingleton();
-   sf::Event event;
-
-   int newWidth;
-   int newHeight;
-   bool resized = 0;
-
-   while (App.GetEvent(event))
-   {
-      if (event.Type == sf::Event::Closed)
-      {
-         App.Close();
-      }
-
-      else if (event.Type == sf::Event::MouseMoved)
-      {
-         mySystem.injectMousePosition(event.MouseMove.X,event.MouseMove.Y);
-      }
-
-      else if (event.Type == sf::Event::MouseButtonPressed)
-      {
-         mySystem.injectMouseButtonDown(chessCegui.mouse(event.MouseButton.Button));
-      }
-
-      else if (event.Type == sf::Event::MouseButtonReleased)
-      {
-         mySystem.injectMouseButtonUp(chessCegui.mouse(event.MouseButton.Button));
-      }
-
-      else if (event.Type == sf::Event::Resized)
-      {
-         resized = 1;
-         newWidth = event.Size.Width;
-         newHeight = event.Size.Height;
-      }
-   }
-
-   if (resized)
-   {
-      mySystem.notifyDisplaySizeChanged(CEGUI::Size(newWidth,newHeight));
-   }
-
-   return;
+   server->hide();
+   return true;
 }
 
-
-void t_chessServer::show()
+bool openConnect(CEGUI::FrameWindow *connect, const CEGUI::EventArgs &e)
 {
+   connect->show();
+   return true;
 }
+
+bool closeConnect(CEGUI::FrameWindow *connect, const CEGUI::EventArgs &e)
+{
+   connect->hide();
+   return true;
+}
+
+void t_chessGui::initServer()
+{
+   CEGUI::FrameWindow *server = static_cast<CEGUI::FrameWindow *>(wmgr->loadWindowLayout("server.layout"));
+   myRoot->addChildWindow(server);
+   server->subscribeEvent(CEGUI::FrameWindow::EventCloseClicked,CEGUI::Event::Subscriber(boost::bind(closeServer,server,_1)));
+
+
+   CEGUI::MenuItem *serverItem = static_cast<CEGUI::MenuItem *>(wmgr->getWindow("Root/FrameWindow/Menubar/File/New"));
+   serverItem->subscribeEvent(CEGUI::MenuItem::EventClicked,CEGUI::Event::Subscriber(boost::bind(openServer,server,_1)));
+
+
+   CEGUI::MultiColumnList *testing = static_cast<CEGUI::MultiColumnList *>(wmgr->getWindow("Lols3"));
+   testing->addColumn("Names",0,CEGUI::UDim(.25,0));
+   testing->addColumn("Action",1,CEGUI::UDim(.25,0));
+   testing->addColumn("Wins",2,CEGUI::UDim(.25,0));
+   testing->addColumn("Losses",3,CEGUI::UDim(.25,0));
+
+   testing->addRow();
+   testing->addRow();
+
+   testing->setItem(new CEGUI::ListboxTextItem("What, wow,"),0u,0u);
+
+   server->hide();
+}
+
+void t_chessGui::initConnect()
+{
+   CEGUI::FrameWindow *connect = static_cast<CEGUI::FrameWindow *>(wmgr->loadWindowLayout("connect.layout"));
+   myRoot->addChildWindow(connect);
+   connect->subscribeEvent(CEGUI::FrameWindow::EventCloseClicked,CEGUI::Event::Subscriber(boost::bind(closeConnect,connect,_1)));
+
+   CEGUI::MenuItem *connectItem = static_cast<CEGUI::MenuItem *>(wmgr->getWindow("Root/FrameWindow/Menubar/File/Open"));
+   connectItem->subscribeEvent(CEGUI::MenuItem::EventClicked,CEGUI::Event::Subscriber(boost::bind(openConnect,connect,_1)));
+
+   CEGUI::PushButton *cancelConnect = static_cast<CEGUI::PushButton *>(wmgr->getWindow("1Lols6"));
+   cancelConnect->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(boost::bind(closeConnect,connect,_1)));
+
+   connect->hide();
+}
+

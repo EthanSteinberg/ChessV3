@@ -14,6 +14,7 @@ public:
    void init();
    
    CEGUI::MouseButton mouse(sf::Mouse::Button);
+   CEGUI::Key::Scan key(sf::Key::Code);
 
 private:
    t_keyMap keyMap;

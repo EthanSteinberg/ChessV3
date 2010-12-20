@@ -1,7 +1,8 @@
 #include "chessGui.h"
-#include "chessServer.h"
 
 #include "../messages.h"
+
+#include <boost/bind.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <CEGUI/CEGUI.h>
@@ -9,8 +10,14 @@
 
 #include <iostream>
 
-t_chessGui::t_chessGui(t_sharedData &theSharedData) : App(sf::VideoMode(800,820,32), "Testing Window")
+t_chessGui::t_chessGui(t_sharedData &theSharedData) : App(sf::VideoMode(800,820,32), "Chess Window"), sharedData(theSharedData)
 {
+}
+
+bool quitApp(sf::RenderWindow &App, const CEGUI::EventArgs &e)
+{
+   App.Close();
+   return true;
 }
 
 void t_chessGui::run()
@@ -19,66 +26,16 @@ void t_chessGui::run()
    loadImages();
    loadSprites();
 
-   CEGUI::OpenGLRenderer &myRenderer = CEGUI::OpenGLRenderer::bootstrapSystem();
+   initCegui();
+   initServer();
+   initConnect();
 
-   CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
-
-   CEGUI::Window *myRoot = CEGUI::WindowManager::getSingleton().loadWindowLayout("test.layout");
-
-   CEGUI::System &mySystem = CEGUI::System::getSingleton();
-   CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
-
-   mySystem.setGUISheet(myRoot);
-
-   CEGUI::FrameWindow *fWnd = static_cast<CEGUI::FrameWindow *>(wmgr.loadWindowLayout("lols.layout"));
-   myRoot->addChildWindow(fWnd);
-
-   //fWnd->hide();
-
-   sf::Event event;
    RedBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,0,0));
    BlackBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(0,255,0));
 
    while (App.IsOpened())
    {
-      int newWidth;
-      int newHeight;
-      bool resized = 0;
-
-      while (App.GetEvent(event))
-      {
-         if (event.Type == sf::Event::Closed)
-         {
-            App.Close();
-         }
-
-         else if (event.Type == sf::Event::MouseMoved)
-         {
-            mySystem.injectMousePosition(event.MouseMove.X,event.MouseMove.Y);
-         }
-
-         else if (event.Type == sf::Event::MouseButtonPressed)
-         {
-            mySystem.injectMouseButtonDown(chessCegui.mouse(event.MouseButton.Button));
-         }
-
-         else if (event.Type == sf::Event::MouseButtonReleased)
-         {
-            mySystem.injectMouseButtonUp(chessCegui.mouse(event.MouseButton.Button));
-         }
-
-         else if (event.Type == sf::Event::Resized)
-         {
-            resized = 1;
-            newWidth = event.Size.Width;
-            newHeight = event.Size.Height;
-         }
-      }
-
-      if (resized)
-      {
-         mySystem.notifyDisplaySizeChanged(CEGUI::Size(newWidth,newHeight));
-      }
+      processEvents();
 
       App.Clear();
 
@@ -130,6 +87,83 @@ void t_chessGui::loadImages()
       images[i].LoadFromFile(buffer);
    }
 
+}
+
+void t_chessGui::initCegui()
+{
+   //CEGUI::OpenGLRenderer &myRenderer =
+   CEGUI::OpenGLRenderer::bootstrapSystem();
+
+   CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
+
+   mySystem = CEGUI::System::getSingletonPtr();
+   wmgr = CEGUI::WindowManager::getSingletonPtr();
+
+   myRoot = wmgr->loadWindowLayout("main.layout");
+   mySystem->setGUISheet(myRoot);
+
+   CEGUI::MenuItem *quitItem = static_cast<CEGUI::MenuItem *>(wmgr->getWindow("Root/FrameWindow/Menubar/File/Exit"));
+   quitItem->subscribeEvent(CEGUI::MenuItem::EventClicked,CEGUI::Event::Subscriber(boost::bind(quitApp,boost::ref(App),_1)));
+}
+
+void t_chessGui::processEvents()
+{
+   sf::Event event;
+
+   int newWidth;
+   int newHeight;
+
+   bool resized = 0;
+
+   while (App.GetEvent(event))
+   {
+      if (event.Type == sf::Event::Closed)
+      {
+         App.Close();
+      }
+
+      else if (event.Type == sf::Event::MouseMoved)
+      {
+         mySystem->injectMousePosition(event.MouseMove.X,event.MouseMove.Y);
+      }
+
+      else if (event.Type == sf::Event::MouseButtonPressed)
+      {
+         mySystem->injectMouseButtonDown(chessCegui.mouse(event.MouseButton.Button));
+      }
+
+      else if (event.Type == sf::Event::MouseButtonReleased)
+      {
+         mySystem->injectMouseButtonUp(chessCegui.mouse(event.MouseButton.Button));
+      }
+
+      else if (event.Type == sf::Event::TextEntered)
+      {
+         mySystem->injectChar(event.Text.Unicode);
+      }
+
+      else if (event.Type == sf::Event::KeyPressed)
+      {
+         mySystem->injectKeyDown(chessCegui.key(event.Key.Code));
+      }
+
+      else if (event.Type == sf::Event::KeyReleased)
+      {
+         mySystem->injectKeyUp(chessCegui.key(event.Key.Code));
+      }
+
+      else if (event.Type == sf::Event::Resized)
+      {
+         resized = 1;
+         newWidth = event.Size.Width;
+         newHeight = event.Size.Height;
+      }
+   }
+
+   if (resized)
+   {
+      mySystem->notifyDisplaySizeChanged(CEGUI::Size(newWidth,newHeight));
+   }
 }
 
 void t_chessGui::loadSprites()
