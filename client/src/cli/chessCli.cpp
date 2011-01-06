@@ -132,6 +132,47 @@ void t_chessCli::run()
                board[selectedPos.y][selectedPos.x] = 0;
             }
 
+            else if (std::find(hit.begin(), hit.end(), pos) != hit.end())
+            {
+               selected = 0;
+               newMessage.highlightSpace.pos = selectedPos;
+               newMessage.highlightSpace.color = 0;
+               
+               {
+                  boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+                  sharedData.clientBuffer.push_front(newMessage);
+
+                  for (auto iter = move.begin(); iter != move.end(); iter++)
+                  {
+                     newMessage.highlightSpace.pos = *iter;
+                     newMessage.highlightSpace.color = 0;
+
+                     sharedData.clientBuffer.push_front(newMessage);
+                  }
+
+                  for (auto iter = hit.begin(); iter != hit.end(); iter++)
+                  {
+                     newMessage.highlightSpace.pos = *iter;
+                     newMessage.highlightSpace.color = 0;
+
+                     sharedData.clientBuffer.push_front(newMessage);
+                  }
+
+                  newMessage.id = CAPTURE_PIECE;
+                  newMessage.movePiece.pos = pos;
+                  newMessage.movePiece.oldPos = selectedPos;
+
+                  sharedData.clientBuffer.push_front(newMessage);
+               }
+
+               move.clear();
+               hit.clear();
+
+               board[pos.y][pos.x] = board[selectedPos.y][selectedPos.x];
+               board[selectedPos.y][selectedPos.x] = 0;
+            }
+
 
          }
 

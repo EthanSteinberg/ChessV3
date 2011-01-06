@@ -109,6 +109,23 @@ void t_chessGui::checkBuffer()
             break;
          }
 
+         case CAPTURE_PIECE:
+         {
+            std::cout<<"I was told to capture a piece"<<std::endl;
+
+            t_myVector2 oldPos = message.movePiece.oldPos;
+            t_myVector2 pos = message.movePiece.pos;
+
+            sprites[boardPieces[oldPos.y][oldPos.x]].SetPosition(pos.x * width, pos.y * height + 20);
+            sprites[boardPieces[pos.y][pos.x]].SetPosition(8 * width, 8 * height + 20);
+            
+
+            boardPieces[pos.y][pos.x] = boardPieces[oldPos.y][oldPos.x];
+            //boardPieces[oldPos.y][oldPos.x] = 0;
+
+            break;
+         }
+
 
          default:
             std::cout<<"The client does not know what it recieved"<<std::endl;

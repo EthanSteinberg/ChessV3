@@ -6,8 +6,7 @@
 
 #include "myvector2.h"
 
-enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE};
-
+enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE, CAPTURE_PIECE};
 
 struct t_boardClicked
 {

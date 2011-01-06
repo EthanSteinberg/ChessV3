@@ -37,6 +37,58 @@ void t_chessCli::generateMoves(const t_myVector2 &pos)
       }
    }
 
+   if (type == 2) //rook
+   {
+      square.x = pos.x;
+      square.y = pos.y -1 + 2 * color;
+
+      while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
+      {
+         if (board[square.y][square.x] == 0)
+         {
+            move.push_back(square);
+         }
+
+         else if (board[square.y][square.x]/8 != color)
+         {
+            hit.push_back(square);
+            break;
+         }
+
+         else 
+         {
+            break;
+         }
+
+         square.y+= -1 + 2 * color;
+      }
+      
+      square.x = pos.x;
+      square.y = pos.y + 1 + -2 * color;
+
+      while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
+      {
+         if (board[square.y][square.x] == 0)
+         {
+            move.push_back(square);
+         }
+
+         else if (board[square.y][square.x]/8 != color)
+         {
+            hit.push_back(square);
+            break;
+         }
+
+         else 
+         {
+            break;
+         }
+
+         square.y+= + 1 + -2 * color;
+      }
+   }
+
+
    if (type == 3) // knight
    {
       square.x = pos.x + 2;
