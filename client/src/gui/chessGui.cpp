@@ -82,20 +82,36 @@ void t_chessGui::checkBuffer()
 
          switch (message.id)
          {
-            case HIGHLIGHT_SPACE:
-            {
-               std::cout<<"I was told to highlight the space "<<message.highlightSpace.color<<std::endl;
-               std::cout<<"It was at "<<message.highlightSpace.pos<<std::endl;
-               std::cout<<std::endl;
-               
-               t_myVector2 pos = message.highlightSpace.pos;
+         case HIGHLIGHT_SPACE:
+         {
+            std::cout<<"I was told to highlight the space "<<message.highlightSpace.color<<std::endl;
+            std::cout<<"It was at "<<message.highlightSpace.pos<<std::endl;
+            std::cout<<std::endl;
 
-               boardColors[pos.y *8 + pos.x] = message.highlightSpace.color;
-               break;
-            }
+            t_myVector2 pos = message.highlightSpace.pos;
 
-            default:
-               std::cout<<"The client does not know what it recieved"<<std::endl;
+            boardColors[pos.y *8 + pos.x] = message.highlightSpace.color;
+            break;
+         }
+
+         case MOVE_PIECE:
+         {
+            std::cout<<"I was told to move a piece"<<std::endl;
+
+            t_myVector2 oldPos = message.movePiece.oldPos;
+            t_myVector2 pos = message.movePiece.pos;
+
+            sprites[boardPieces[oldPos.y][oldPos.x]].SetPosition(pos.x * width, pos.y * height + 20);
+
+            boardPieces[pos.y][pos.x] = boardPieces[oldPos.y][oldPos.x];
+            //boardPieces[oldPos.y][oldPos.x] = 0;
+
+            break;
+         }
+
+
+         default:
+            std::cout<<"The client does not know what it recieved"<<std::endl;
          }
       }
    }
@@ -191,6 +207,17 @@ void t_chessGui::processEvents()
       if (event.Type == sf::Event::Closed)
       {
          App.Close();
+         t_message message;
+
+         message.id = QUIT_MESSAGE;
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+            sharedData.gameBuffer.push_back(message);
+         }
+
+         sharedData.gameCondition.notify_one();
       }
 
       else if (event.Type == sf::Event::MouseMoved)
@@ -268,60 +295,78 @@ void t_chessGui::loadSprites()
    {
       sprites[i].SetImage(images[0]);
       sprites[i].SetPosition(i * width,height*6 + 20);
+      boardPieces[6][i] = i;
    }
 
    sprites[8].SetImage(images[3]);
    sprites[8].SetPosition(0 * width,height*7 + 20);
+   boardPieces[7][0] = 8;
 
    sprites[9].SetImage(images[1]);
    sprites[9].SetPosition(1 * width,height*7 + 20);
+   boardPieces[7][1] = 9;
 
    sprites[10].SetImage(images[2]);
    sprites[10].SetPosition(2 * width,height*7 + 20);
+   boardPieces[7][2] = 10;
 
    sprites[11].SetImage(images[5]);
    sprites[11].SetPosition(3 * width,height*7 + 20);
+   boardPieces[7][3] = 11;
 
    sprites[12].SetImage(images[4]);
    sprites[12].SetPosition(4 * width,height*7 + 20);
+   boardPieces[7][4] = 12;
 
    sprites[13].SetImage(images[2]);
    sprites[13].SetPosition(5 * width,height*7 + 20);
+   boardPieces[7][5] = 13;
 
    sprites[14].SetImage(images[1]);
    sprites[14].SetPosition(6 * width,height*7 + 20);
+   boardPieces[7][6] = 14;
 
    sprites[15].SetImage(images[3]);
    sprites[15].SetPosition(7 * width,height*7 + 20);
+   boardPieces[7][7] = 15;
 
    //Load blacks
    for (int i = 0; i<8; i++)
    {
       sprites[i+16].SetImage(images[6]);
       sprites[i+16].SetPosition(i * width,height*1 + 20);
+      boardPieces[1][i] = i + 16;
    }
 
    sprites[24].SetImage(images[9]);
    sprites[24].SetPosition(0 * width,height*0 + 20);
+   boardPieces[0][0] = 24;
 
    sprites[25].SetImage(images[7]);
    sprites[25].SetPosition(1 * width,height*0 + 20);
+   boardPieces[0][1] = 25;
 
    sprites[26].SetImage(images[8]);
    sprites[26].SetPosition(2 * width,height*0 + 20);
+   boardPieces[0][2] = 26;
 
    sprites[27].SetImage(images[11]);
    sprites[27].SetPosition(3 * width,height*0 + 20);
+   boardPieces[0][3] = 27;
 
    sprites[28].SetImage(images[10]);
    sprites[28].SetPosition(4 * width,height*0 + 20);
+   boardPieces[0][4] = 28;
 
    sprites[29].SetImage(images[8]);
    sprites[29].SetPosition(5 * width,height*0 + 20);
+   boardPieces[0][5] = 29;
 
    sprites[30].SetImage(images[7]);
    sprites[30].SetPosition(6 * width,height*0 + 20);
+   boardPieces[0][6] = 30;
 
    sprites[31].SetImage(images[9]);
    sprites[31].SetPosition(7 * width,height*0 + 20);
+   boardPieces[0][7] = 31;
 }

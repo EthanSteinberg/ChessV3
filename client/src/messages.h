@@ -6,7 +6,7 @@
 
 #include "myvector2.h"
 
-enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE};
+enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE};
 
 
 struct t_boardClicked
@@ -23,7 +23,7 @@ struct t_highlightSpace
 struct t_movePiece
 {
    t_myVector2 pos;
-   int code;
+   t_myVector2 oldPos;
 };
 
 struct t_message

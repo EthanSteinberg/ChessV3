@@ -53,6 +53,8 @@ private:
 
    int boardColors[64];
 
+   int boardPieces[8][8];
+
    const int width;
    const int height;
 
