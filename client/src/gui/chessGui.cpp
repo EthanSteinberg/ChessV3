@@ -10,13 +10,27 @@
 
 #include <iostream>
 
-t_chessGui::t_chessGui(t_sharedData &theSharedData) : App(sf::VideoMode(800,820,32), "Chess Window"), sharedData(theSharedData)
+t_chessGui::t_chessGui(t_sharedData &theSharedData) : App(sf::VideoMode(800,820,32), "Chess Window"), sharedData(theSharedData), width(100), height(100), newWidth(800), newHeight(820)
 {
+   boardColors = {};
 }
 
-bool quitApp(sf::RenderWindow &App, const CEGUI::EventArgs &e)
+bool quitApp(sf::RenderWindow &App,t_sharedData &sharedData, const CEGUI::EventArgs &e)
 {
    App.Close();
+
+   t_message message;
+
+   message.id = QUIT_MESSAGE;
+
+   {
+      boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+      sharedData.gameBuffer.push_back(message);
+   }
+
+   sharedData.gameCondition.notify_one();
+
    return true;
 }
 
@@ -32,10 +46,15 @@ void t_chessGui::run()
 
    RedBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,0,0));
    BlackBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(0,255,0));
+   BlueBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(0,0,255));
+   BrownBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,255,0));
+   PurpleBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(160,32,240));
 
    while (App.IsOpened())
    {
       processEvents();
+
+      checkBuffer();
 
       App.Clear();
 
@@ -49,13 +68,65 @@ void t_chessGui::run()
    return;
 }
 
+void t_chessGui::checkBuffer()
+{
+   t_message message;
+
+   {
+      boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+      while (!sharedData.clientBuffer.empty())
+      {
+         message = sharedData.clientBuffer.back();
+         sharedData.clientBuffer.pop_back();
+
+         switch (message.id)
+         {
+            case HIGHLIGHT_SPACE:
+            {
+               std::cout<<"I was told to highlight the space "<<message.highlightSpace.color<<std::endl;
+               std::cout<<"It was at "<<message.highlightSpace.pos<<std::endl;
+               std::cout<<std::endl;
+               
+               t_myVector2 pos = message.highlightSpace.pos;
+
+               boardColors[pos.y *8 + pos.x] = message.highlightSpace.color;
+               break;
+            }
+
+            default:
+               std::cout<<"The client does not know what it recieved"<<std::endl;
+         }
+      }
+   }
+}
+
+
 void t_chessGui::drawBoard()
 {
    for (int y = 0; y<8; y++)
    {
       for (int x =0 ; x<8; x++)
       {
-         if ((x+y)%2)
+         if (boardColors[y*8 + x] == 1)
+         {
+            BlueBox.SetPosition(x*width,y*height +20);
+            App.Draw(BlueBox);
+         }
+
+         else if (boardColors[y*8 + x] == 2)
+         {
+            BrownBox.SetPosition(x*width,y*height +20);
+            App.Draw(BrownBox);
+         }
+
+         else if (boardColors[y*8 + x] == 3)
+         {
+            PurpleBox.SetPosition(x*width,y*height +20);
+            App.Draw(PurpleBox);
+         }
+
+         else if ((x+y)%2)
          {
             BlackBox.SetPosition(x*width,y*height +20);
             App.Draw(BlackBox);
@@ -69,6 +140,7 @@ void t_chessGui::drawBoard()
 
       }
    }
+
 
    for (int i =0; i<32; i++)
    {
@@ -89,6 +161,7 @@ void t_chessGui::loadImages()
 
 }
 
+
 void t_chessGui::initCegui()
 {
    //CEGUI::OpenGLRenderer &myRenderer =
@@ -101,17 +174,15 @@ void t_chessGui::initCegui()
 
    myRoot = wmgr->loadWindowLayout("main.layout");
    mySystem->setGUISheet(myRoot);
+   myRoot->setMousePassThroughEnabled(true);
 
    CEGUI::MenuItem *quitItem = static_cast<CEGUI::MenuItem *>(wmgr->getWindow("Root/FrameWindow/Menubar/File/Exit"));
-   quitItem->subscribeEvent(CEGUI::MenuItem::EventClicked,CEGUI::Event::Subscriber(boost::bind(quitApp,boost::ref(App),_1)));
+   quitItem->subscribeEvent(CEGUI::MenuItem::EventClicked,CEGUI::Event::Subscriber(boost::bind(quitApp,boost::ref(App),boost::ref(sharedData),_1)));
 }
 
 void t_chessGui::processEvents()
 {
    sf::Event event;
-
-   int newWidth;
-   int newHeight;
 
    bool resized = 0;
 
@@ -129,7 +200,32 @@ void t_chessGui::processEvents()
 
       else if (event.Type == sf::Event::MouseButtonPressed)
       {
-         mySystem->injectMouseButtonDown(chessCegui.mouse(event.MouseButton.Button));
+         bool handled = mySystem->injectMouseButtonDown(chessCegui.mouse(event.MouseButton.Button));
+
+         if (event.MouseButton.Y > (20.0/820.0 * newHeight) && !handled) // If I press a box
+         {
+            int x = (event.MouseButton.X)/(newWidth/8);
+            int y = (event.MouseButton.Y + -20.0/820.0 * newHeight)/(newHeight/8);
+
+            //std::cout<<event.MouseButton.X<<' '<<event.MouseButton.Y<<std::endl;
+            //std::cout<<x<<' '<<y<<std::endl;
+            //std::cout<<std::endl;
+
+
+            t_message message;
+
+            message.id = BOARD_CLICKED;
+            message.boardClicked.pos.x = x;
+            message.boardClicked.pos.y = y;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_back(message);
+            }
+
+            sharedData.gameCondition.notify_one();
+         }
       }
 
       else if (event.Type == sf::Event::MouseButtonReleased)

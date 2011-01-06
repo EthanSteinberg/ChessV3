@@ -29,6 +29,8 @@ private:
    void initConnect();
    void initCegui();
 
+   void checkBuffer();
+
    t_chessCegui chessCegui;
 
    sf::RenderWindow App;
@@ -39,6 +41,9 @@ private:
 
    sf::Shape BlackBox;
    sf::Shape RedBox;
+   sf::Shape BlueBox;
+   sf::Shape BrownBox;
+   sf::Shape PurpleBox;
 
    CEGUI::Window *myRoot;
    CEGUI::System *mySystem;
@@ -46,10 +51,13 @@ private:
 
    t_sharedData &sharedData;
 
+   int boardColors[64];
 
-   const static int width = 100;
-   const static int height = 100;
+   const int width;
+   const int height;
 
+   int newWidth;
+   int newHeight;
 };
 
 #endif

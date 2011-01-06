@@ -4,6 +4,7 @@ set(HDRS
  
 set(SRCS
       chessCli.cpp
+      generateMoves.cpp
 )
 
 add_library(ChessCli ${HDRS} ${SRCS})
