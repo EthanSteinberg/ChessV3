@@ -49,6 +49,7 @@ void t_chessGui::run()
    BlueBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(0,0,255));
    BrownBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,255,0));
    PurpleBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(160,32,240));
+   PinkBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,182,193));
 
    while (App.IsOpened())
    {
@@ -84,9 +85,9 @@ void t_chessGui::checkBuffer()
          {
          case HIGHLIGHT_SPACE:
          {
-            std::cout<<"I was told to highlight the space "<<message.highlightSpace.color<<std::endl;
-            std::cout<<"It was at "<<message.highlightSpace.pos<<std::endl;
-            std::cout<<std::endl;
+            //std::cout<<"I was told to highlight the space "<<message.highlightSpace.color<<std::endl;
+            //std::cout<<"It was at "<<message.highlightSpace.pos<<std::endl;
+            //std::cout<<std::endl;
 
             t_myVector2 pos = message.highlightSpace.pos;
 
@@ -96,7 +97,7 @@ void t_chessGui::checkBuffer()
 
          case MOVE_PIECE:
          {
-            std::cout<<"I was told to move a piece"<<std::endl;
+            //std::cout<<"I was told to move a piece"<<std::endl;
 
             t_myVector2 oldPos = message.movePiece.oldPos;
             t_myVector2 pos = message.movePiece.pos;
@@ -111,7 +112,7 @@ void t_chessGui::checkBuffer()
 
          case CAPTURE_PIECE:
          {
-            std::cout<<"I was told to capture a piece"<<std::endl;
+            //std::cout<<"I was told to capture a piece"<<std::endl;
 
             t_myVector2 oldPos = message.movePiece.oldPos;
             t_myVector2 pos = message.movePiece.pos;
@@ -157,6 +158,12 @@ void t_chessGui::drawBoard()
          {
             PurpleBox.SetPosition(x*width,y*height +20);
             App.Draw(PurpleBox);
+         }
+
+         else if (boardColors[y*8 + x] == 4)
+         {
+            PinkBox.SetPosition(x*width,y*height +20);
+            App.Draw(PinkBox);
          }
 
          else if ((x+y)%2)

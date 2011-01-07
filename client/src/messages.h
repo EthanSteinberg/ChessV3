@@ -42,7 +42,7 @@ typedef boost::circular_buffer<t_message> t_messageBuffer;
 
 struct t_sharedData
 {
-   t_sharedData() : clientBuffer(10), gameBuffer(10)
+   t_sharedData() : clientBuffer(100), gameBuffer(100)
    {}
 
    boost::mutex clientMutex;

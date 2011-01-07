@@ -44,6 +44,7 @@ private:
    sf::Shape BlueBox;
    sf::Shape BrownBox;
    sf::Shape PurpleBox;
+   sf::Shape PinkBox;
 
    CEGUI::Window *myRoot;
    CEGUI::System *mySystem;

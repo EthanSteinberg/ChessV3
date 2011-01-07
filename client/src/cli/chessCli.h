@@ -22,9 +22,11 @@ public:
 
 private:
    void generateMoves(const t_myVector2 &pos);
+   void removeCastle(const t_myVector2 &pos);
 
    std::vector<t_myVector2> move;
    std::vector<t_myVector2> hit;
+   std::vector<t_myVector2> castle;
 
    t_sharedData &sharedData;
 
@@ -32,6 +34,12 @@ private:
 
    t_myVector2 selectedPos;
    bool selected;
+
+   bool whiteCanCastleLeft;
+   bool whiteCanCastleRight;
+
+   bool blackCanCastleLeft;
+   bool blackCanCastleRight;
 
 };
 
