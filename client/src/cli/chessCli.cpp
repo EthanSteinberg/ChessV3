@@ -29,6 +29,13 @@ t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData),
    blackCanCastleLeft = 1;
    blackCanCastleRight = 1;
 
+   turn = 0;
+
+   whiteKingPos.x = 4;
+   blackKingPos.x = 4;
+
+   whiteKingPos.y = 7;
+   blackKingPos.y = 0;
 
 }
 
@@ -109,7 +116,15 @@ void t_chessCli::run()
 
             else if (std::find(move.begin(), move.end(), pos) != move.end())
             {
-               removeCastle(selectedPos);
+               if (checkCheck(pos,selectedPos))
+               {
+                  std::cout<<"I am in check"<<std::endl;
+                  break;
+               }
+
+
+
+               removeCastle(pos,selectedPos);
 
                selected = 0;
                newMessage.highlightSpace.pos = selectedPos;
@@ -157,11 +172,18 @@ void t_chessCli::run()
 
                board[pos.y][pos.x] = board[selectedPos.y][selectedPos.x];
                board[selectedPos.y][selectedPos.x] = 0;
+
+               turn = !turn;
             }
 
             else if (std::find(hit.begin(), hit.end(), pos) != hit.end())
             {
-               removeCastle(selectedPos);
+               if (checkCheck(pos,selectedPos))
+               {
+                  std::cout<<"I am in check"<<std::endl;
+                  break;
+               }
+               removeCastle(pos,selectedPos);
 
                selected = 0;
                newMessage.highlightSpace.pos = selectedPos;
@@ -209,11 +231,19 @@ void t_chessCli::run()
 
                board[pos.y][pos.x] = board[selectedPos.y][selectedPos.x];
                board[selectedPos.y][selectedPos.x] = 0;
+
+               turn = !turn;
             }
 
             else if (std::find(castle.begin(), castle.end(), pos) != castle.end())
             {
-               removeCastle(selectedPos);
+               if (checkCheck(pos,selectedPos))
+               {
+                  std::cout<<"I am in check"<<std::endl;
+                  break;
+               }
+
+               removeCastle(pos,selectedPos);
 
                selected = 0;
                newMessage.highlightSpace.pos = selectedPos;
@@ -287,6 +317,8 @@ void t_chessCli::run()
                   board[selectedPos.y][7] = 0;
                }
 
+               turn = !turn;
+
 
             }
 
@@ -294,7 +326,7 @@ void t_chessCli::run()
 
          }
 
-         else if (board[pos.y][pos.x])
+         else if (board[pos.y][pos.x] && board[pos.y][pos.x]/8 == turn)
          {
             selected = 1;
             selectedPos = pos;

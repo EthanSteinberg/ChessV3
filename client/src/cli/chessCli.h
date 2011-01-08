@@ -22,7 +22,10 @@ public:
 
 private:
    void generateMoves(const t_myVector2 &pos);
-   void removeCastle(const t_myVector2 &pos);
+   void removeCastle(const t_myVector2 &pos, const t_myVector2 &oldPos);
+
+   bool checkCheck(const t_myVector2 &pos, const t_myVector2 &oldPos);
+   bool checkCheckmate();
 
    std::vector<t_myVector2> move;
    std::vector<t_myVector2> hit;
@@ -40,6 +43,11 @@ private:
 
    bool blackCanCastleLeft;
    bool blackCanCastleRight;
+
+   bool turn;
+
+   t_myVector2 whiteKingPos;
+   t_myVector2 blackKingPos;
 
 };
 

@@ -7,7 +7,7 @@
 #include "chessCli.h"
 #include "../messages.h"
 
-void t_chessCli::removeCastle(const t_myVector2 &pos)
+void t_chessCli::removeCastle(const t_myVector2 &newPos, const t_myVector2 &pos)
 {
    int piece = board[pos.y][pos.x];
    int color = piece/8;
@@ -23,12 +23,16 @@ void t_chessCli::removeCastle(const t_myVector2 &pos)
          {
             whiteCanCastleRight = 0;
             whiteCanCastleLeft = 0;
+
+            whiteKingPos = newPos;
          }
 
          else
          {
             blackCanCastleRight = 0;
             blackCanCastleLeft = 0;
+
+            blackKingPos = newPos;
          }
 
          std::cout<<"A king has been moved"<<std::endl;
