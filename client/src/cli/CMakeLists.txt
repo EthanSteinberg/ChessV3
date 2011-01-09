@@ -8,6 +8,7 @@ set(SRCS
       removeCastle.cpp
       check.cpp
       checkMate.cpp
+      addPieceMoves.cpp
 )
 
 add_library(ChessCli ${HDRS} ${SRCS})

@@ -3,6 +3,7 @@
 #include <boost/thread.hpp>
 
 #include <cstdio>
+#include <cstdlib>
 
 #include "chessCli.h"
 #include "../messages.h"

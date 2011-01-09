@@ -16,7 +16,17 @@ public:
 
    bool operator<(const t_myVector2 &vec) const
    {
-      return ((x < vec.x) && (y < vec.y));
+      return (x*x + y*y < vec.x * vec.x + vec.y * vec.y);
+   }
+
+   t_myVector2 operator-(const t_myVector2 &vec) const
+   {
+      t_myVector2 out;
+
+      out.x = x - vec.x;
+      out.y = y - vec.y;
+
+      return out;
    }
 
 
