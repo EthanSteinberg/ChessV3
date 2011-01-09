@@ -9,10 +9,16 @@ public:
    int x;
    int y;
 
-   bool operator==(const t_myVector2 &vec)
+   bool operator==(const t_myVector2 &vec) const
    {
       return ((x == vec.x) && (y == vec.y));
    }
+
+   bool operator<(const t_myVector2 &vec) const
+   {
+      return ((x < vec.x) && (y < vec.y));
+   }
+
 
    friend std::ostream &operator<<(std::ostream &out, const t_myVector2 &vec)
    {

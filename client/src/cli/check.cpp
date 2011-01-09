@@ -443,7 +443,3 @@ bad:
 
 }
 
-bool t_chessCli::checkCheckmate()
-{
-   return 0;
-}

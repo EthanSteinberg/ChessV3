@@ -37,6 +37,28 @@ t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData),
    whiteKingPos.y = 7;
    blackKingPos.y = 0;
 
+
+   t_myVector2 pos;
+
+   for (int y = 6;y < 8;y++)
+   {
+      pos.y = y;
+      for (int x = 0; x<8;x++)
+      {
+         pos.x = x;
+         whitePieces.insert(pos);
+      }
+   }
+
+   for (int y = 0;y < 2;y++)
+   {
+      pos.y = y;
+      for (int x = 0; x<8;x++)
+      {
+         pos.x = x;
+         blackPieces.insert(pos);
+      }
+   }
 }
 
 void t_chessCli::run()
@@ -122,7 +144,17 @@ void t_chessCli::run()
                   break;
                }
 
+               if (turn == 0)
+               {
+                  whitePieces.erase(selectedPos);
+                  whitePieces.insert(pos);
+               }
 
+               else
+               {
+                  blackPieces.erase(selectedPos);
+                  blackPieces.insert(pos);
+               }
 
                removeCastle(pos,selectedPos);
 
@@ -174,6 +206,11 @@ void t_chessCli::run()
                board[selectedPos.y][selectedPos.x] = 0;
 
                turn = !turn;
+
+               if (checkCheckmate())
+               {
+                  std::cout<<"I win"<<std::endl;
+               }
             }
 
             else if (std::find(hit.begin(), hit.end(), pos) != hit.end())
@@ -183,6 +220,23 @@ void t_chessCli::run()
                   std::cout<<"I am in check"<<std::endl;
                   break;
                }
+
+               if (turn == 0)
+               {
+                  whitePieces.erase(selectedPos);
+                  whitePieces.insert(pos);
+
+                  blackPieces.erase(pos);
+               }
+
+               else
+               {
+                  blackPieces.erase(selectedPos);
+                  blackPieces.insert(pos);
+
+                  whitePieces.erase(pos);
+               }
+
                removeCastle(pos,selectedPos);
 
                selected = 0;
@@ -233,6 +287,11 @@ void t_chessCli::run()
                board[selectedPos.y][selectedPos.x] = 0;
 
                turn = !turn;
+
+               if (checkCheckmate())
+               {
+                  std::cout<<"I win"<<std::endl;
+               }
             }
 
             else if (std::find(castle.begin(), castle.end(), pos) != castle.end())
@@ -241,6 +300,18 @@ void t_chessCli::run()
                {
                   std::cout<<"I am in check"<<std::endl;
                   break;
+               }
+
+               if (turn == 0)
+               {
+                  whitePieces.erase(selectedPos);
+                  whitePieces.insert(pos);
+               }
+
+               else
+               {
+                  blackPieces.erase(selectedPos);
+                  blackPieces.insert(pos);
                }
 
                removeCastle(pos,selectedPos);
@@ -307,19 +378,41 @@ void t_chessCli::run()
 
                if (pos.x == 2) //left
                {
+                  pos.x = 3;
+                  selectedPos.x = 0;
+
                   board[pos.y][3] = board[selectedPos.y][0];
                   board[selectedPos.y][0] = 0;
                }
                
                else 
                {
+                  pos.x = 5;
+                  selectedPos.x = 7;
+
                   board[pos.y][5] = board[selectedPos.y][7];
                   board[selectedPos.y][7] = 0;
+               }
+
+               if (turn == 0)
+               {
+                  whitePieces.erase(selectedPos);
+                  whitePieces.insert(pos);
+               }
+
+               else
+               {
+                  blackPieces.erase(selectedPos);
+                  blackPieces.insert(pos);
                }
 
                turn = !turn;
 
 
+               if (checkCheckmate())
+               {
+                  std::cout<<"I win"<<std::endl;
+               }
             }
 
 

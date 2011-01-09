@@ -4,6 +4,7 @@
 #include <boost/utility.hpp>
 #include <iostream>
 #include <vector>
+#include <set>
 
 #include "../myvector2.h"
 
@@ -49,6 +50,8 @@ private:
    t_myVector2 whiteKingPos;
    t_myVector2 blackKingPos;
 
+   std::set<t_myVector2> whitePieces;
+   std::set<t_myVector2> blackPieces;
 };
 
 #endif
