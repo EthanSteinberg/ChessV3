@@ -9,6 +9,6 @@ set(SRCS
 
 
 add_executable(ChessServer ${HDRS} ${SRCS})
-target_link_libraries(ChessServer ChessNetwork)
+target_link_libraries(ChessServer ChessNetwork ChessCli2 ${Boost_LIBRARIES})
 
 add_subdirectory(src)

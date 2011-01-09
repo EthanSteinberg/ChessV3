@@ -2,6 +2,9 @@
 #define CHESS_NETWORK_H_INCLUDED
 
 #include <boost/utility.hpp>
+
+#include <boost/asio.hpp>
+
 #include <iostream>
 
 class t_chessNetwork : boost::noncopyable
@@ -16,6 +19,7 @@ public:
    }
 
 private:
+   boost::asio::io_service io_service;
 };
 
 #endif
