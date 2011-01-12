@@ -468,6 +468,9 @@ void t_chessCli::run()
          break;
       }
 
+      case CONNECT_SERVER:
+         std::cout<<"Connecting to server"<<std::endl;
+
       case QUIT_MESSAGE:
          std::cout<<"It told me to quit"<<std::endl;
          return;
