@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<GUILayout>
+   <Window Type="TaharezLook/FrameWindow" Name="1testWindow2">
+      <Property Name="UnifiedPosition" Value="{ {0.25, 0}, {0.25, 0} }" />
+      <Property Name="UnifiedSize" Value="{ {0.5, 0}, {0.5, 0} }" />
+      <Property Name="Text" Value="Hello World!" />
+
+      <Window Type="TaharezLook/StaticText" Name="1Lols">
+         <Property Name="Text" Value="Please enter a nickname:" />
+         <Property Name="UnifiedPosition" Value="{ {0, 0}, {0, 0} }" />
+         <Property Name="UnifiedSize" Value="{ {.7, 0}, {.1, 0} }" />
+        <Property Name="FrameEnabled" Value="False" />
+      </Window>
+
+      <Window Type="TaharezLook/Editbox" Name="1Lols2">
+         <Property Name="Text" Value="Name" />
+         <Property Name="UnifiedPosition" Value="{ {.7, 0}, {0, 0} }" />
+         <Property Name="UnifiedSize" Value="{ {.3, 0}, {.1, 0} }" />
+      </Window>
+      
+      <Window Type="TaharezLook/StaticText" Name="1Lols9">
+         <Property Name="Text" Value="Please enter an address:" />
+         <Property Name="UnifiedPosition" Value="{ {0, 0}, {.1, 0} }" />
+         <Property Name="UnifiedSize" Value="{ {.7, 0}, {.1, 0} }" />
+        <Property Name="FrameEnabled" Value="False" />
+      </Window>
+
+      <Window Type="TaharezLook/Editbox" Name="1Lols7">
+         <Property Name="Text" Value="127.0.0.1" />
+         <Property Name="UnifiedPosition" Value="{ {.7, 0}, {.1, 0} }" />
+         <Property Name="UnifiedSize" Value="{ {.3, 0}, {.1, 0} }" />
+      </Window>
+
+      <Window Type="TaharezLook/Button" Name="1Lols4">
+         <Property Name="Text" Value="Connect" />
+         <Property Name="UnifiedPosition" Value="{ {.15, 0}, {.85, 0} }" />
+         <Property Name="UnifiedSize" Value="{ {.30, 0}, {.1, 0} }" />
+      </Window>
+
+      <Window Type="TaharezLook/Button" Name="1Lols6">
+         <Property Name="Text" Value="Cancel" />
+         <Property Name="UnifiedPosition" Value="{ {.60, 0}, {.85, 0} }" />
+         <Property Name="UnifiedSize" Value="{ {.30, 0}, {.1, 0} }" />
+      </Window>
+   </Window>
+ </GUILayout>
