@@ -12,4 +12,5 @@ t_chessConnection::t_chessConnection(t_sharedData &theSharedData, const boost::s
 
 void t_chessConnection::run()
 {
+
 }

@@ -31,6 +31,7 @@ void makeConnection(const boost::shared_ptr<tcp::socket> &socket)
 
    boost::thread createCli(boost::bind(makeCli,boost::ref(sharedData)));
    t_chessConnection connection(sharedData,socket);
+   connection.run();
 }
 
 void t_chessNetwork::run()
