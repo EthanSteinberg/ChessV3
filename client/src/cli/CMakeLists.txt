@@ -12,4 +12,4 @@ set(SRCS
 )
 
 add_library(ChessCli ${HDRS} ${SRCS})
-target_link_libraries(ChessGui)
+target_link_libraries(ChessCli)

@@ -468,6 +468,20 @@ void t_chessCli::run()
          break;
       }
 
+      case JOIN_SERVER:
+      {
+         std::cout<<"Telling net to join the server"<<std::endl;
+
+   {
+      boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+
+      sharedData.netBuffer.push_back(message);
+      sharedData.gameCondition.notify_one();
+   }
+
+         break;
+      }
+      
       case QUIT_MESSAGE:
          std::cout<<"It told me to quit"<<std::endl;
          return;
