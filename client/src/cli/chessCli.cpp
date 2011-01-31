@@ -6,7 +6,7 @@
 #include <cstdlib>
 
 #include "chessCli.h"
-#include "../messages.h"
+#include "messages.h"
 
 t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData), selected(0)
 {
@@ -41,20 +41,22 @@ t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData),
 
    t_myVector2 pos;
 
-   for (int y = 6;y < 8;y++)
+   for (int y = 6; y < 8; y++)
    {
       pos.y = y;
-      for (int x = 0; x<8;x++)
+
+      for (int x = 0; x<8; x++)
       {
          pos.x = x;
          whitePieces.insert(pos);
       }
    }
 
-   for (int y = 0;y < 2;y++)
+   for (int y = 0; y < 2; y++)
    {
       pos.y = y;
-      for (int x = 0; x<8;x++)
+
+      for (int x = 0; x<8; x++)
       {
          pos.x = x;
          blackPieces.insert(pos);
@@ -162,7 +164,7 @@ void t_chessCli::run()
                selected = 0;
                newMessage.highlightSpace.pos = selectedPos;
                newMessage.highlightSpace.color = 0;
-               
+
                {
                   boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
 
@@ -243,7 +245,7 @@ void t_chessCli::run()
                selected = 0;
                newMessage.highlightSpace.pos = selectedPos;
                newMessage.highlightSpace.color = 0;
-               
+
                {
                   boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
 
@@ -320,7 +322,7 @@ void t_chessCli::run()
                selected = 0;
                newMessage.highlightSpace.pos = selectedPos;
                newMessage.highlightSpace.color = 0;
-               
+
                {
                   boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
 
@@ -357,7 +359,7 @@ void t_chessCli::run()
                   sharedData.clientBuffer.push_front(newMessage);
 
                   if (pos.x == 2) //left castle
-                  { 
+                  {
                      newMessage.movePiece.pos.x = 3;
                      newMessage.movePiece.oldPos.x = 0;
                   }
@@ -367,7 +369,8 @@ void t_chessCli::run()
                      newMessage.movePiece.pos.x = 5;
                      newMessage.movePiece.oldPos.x = 7;
                   }
-                     sharedData.clientBuffer.push_front(newMessage);
+
+                  sharedData.clientBuffer.push_front(newMessage);
                }
 
                move.clear();
@@ -385,8 +388,8 @@ void t_chessCli::run()
                   board[pos.y][3] = board[selectedPos.y][0];
                   board[selectedPos.y][0] = 0;
                }
-               
-               else 
+
+               else
                {
                   pos.x = 5;
                   selectedPos.x = 7;
@@ -472,18 +475,26 @@ void t_chessCli::run()
       {
          std::cout<<"Telling net to join the server"<<std::endl;
 
-   {
-      boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
 
-      sharedData.netBuffer.push_back(message);
-      sharedData.gameCondition.notify_one();
-   }
+            sharedData.netBuffer.push_back(message);
+            sharedData.netCondition.notify_one();
+         }
 
          break;
       }
-      
+
       case QUIT_MESSAGE:
+      {
          std::cout<<"It told me to quit"<<std::endl;
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+
+            sharedData.netBuffer.push_back(message);
+            sharedData.netCondition.notify_one();
+         }
+      } 
          return;
 
       default:

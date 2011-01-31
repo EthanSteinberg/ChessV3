@@ -30,6 +30,8 @@ set(CEGUI_DIR lib/CEGUI-.0.7.5)
 find_package(CEGUI REQUIRED)
 include_directories(${CEGUI_INCLUDE_DIR})
 
+include_directories(shared)
+
 add_subdirectory(client) 
 add_subdirectory(server) 
 

@@ -6,7 +6,7 @@
 #include <cstdlib>
 
 #include "chessCli.h"
-#include "../messages.h"
+#include "messages.h"
 
 t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData), selected(0)
 {

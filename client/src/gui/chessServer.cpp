@@ -1,6 +1,6 @@
 #include "chessGui.h"
 
-#include "../messages.h"
+#include "messages.h"
 
 #include <boost/bind.hpp>
 
@@ -9,6 +9,8 @@
 #include <CEGUI/RendererModules/OpenGL/CEGUIOpenGLRenderer.h>
 
 #include <iostream>
+
+#include <cstring>
 
 bool openServer(CEGUI::FrameWindow *server, const CEGUI::EventArgs &e)
 {
@@ -33,6 +35,31 @@ bool closeConnect(CEGUI::FrameWindow *connect, const CEGUI::EventArgs &e)
    connect->hide();
    return true;
 }
+
+bool connectToServer(CEGUI::Editbox* name, CEGUI::Editbox* ip, t_sharedData &sharedData, const CEGUI::EventArgs &e)
+{
+   t_message message;
+
+   message.id = JOIN_SERVER;
+   
+   strcpy(message.joinServer.name,name->getText().c_str());
+   std::cout<<message.joinServer.name<<std::endl;
+   
+   strcpy(message.joinServer.address,ip->getText().c_str());
+   std::cout<<message.joinServer.address<<std::endl;
+   
+   {
+      boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+      sharedData.gameBuffer.push_back(message);
+   }
+
+   sharedData.gameCondition.notify_one();
+
+
+   return true;
+}
+
 
 void t_chessGui::initServer()
 {
@@ -72,8 +99,18 @@ void t_chessGui::initConnect()
    CEGUI::MenuItem *newConnectItem = static_cast<CEGUI::MenuItem *>(wmgr->getWindow("Lols2"));
    newConnectItem->subscribeEvent(CEGUI::MenuItem::EventClicked,CEGUI::Event::Subscriber(boost::bind(openConnect,connect,_1)));
 
+
+
    CEGUI::PushButton *cancelConnect = static_cast<CEGUI::PushButton *>(wmgr->getWindow("1Lols6"));
    cancelConnect->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(boost::bind(closeConnect,connect,_1)));
+
+
+   CEGUI::Editbox *name = static_cast<CEGUI::Editbox *>(wmgr->getWindow("1Lols2"));
+   CEGUI::Editbox *ip = static_cast<CEGUI::Editbox *>(wmgr->getWindow("1Lols7"));
+
+
+   CEGUI::PushButton *startConnection = static_cast<CEGUI::PushButton *>(wmgr->getWindow("1Lols4"));
+   startConnection->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(boost::bind(connectToServer,name,ip,boost::ref(sharedData),_1)));
 
    connect->hide();
 }

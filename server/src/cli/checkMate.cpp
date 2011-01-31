@@ -6,7 +6,7 @@
 #include <cstdio>
 
 #include "chessCli.h"
-#include "../messages.h"
+#include "messages.h"
 
 void printBit(const std::bitset<64> &set)
 {

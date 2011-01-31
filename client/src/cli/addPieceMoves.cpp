@@ -6,7 +6,7 @@
 #include <cstdio>
 
 #include "chessCli.h"
-#include "../messages.h"
+#include "messages.h"
 
 
 void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSquares)

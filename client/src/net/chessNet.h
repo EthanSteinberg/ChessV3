@@ -9,7 +9,7 @@
 
 #include <boost/asio.hpp>
 
-#include "../myvector2.h"
+#include "myvector2.h"
 
 
 class t_sharedData;
@@ -20,6 +20,7 @@ public:
    t_chessNet(t_sharedData &theSharedData);
 
    void run();
+   void connected(const std::string &name,const std::string &address);
 
    ~t_chessNet()
    {

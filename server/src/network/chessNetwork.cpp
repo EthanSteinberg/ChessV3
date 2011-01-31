@@ -2,13 +2,15 @@
 #include "chessConnection.h"
 #include "../cli/chessCli.h"
 
-#include "../messages.h"
+#include "messages.h"
 
 #include <iostream>
 
 #include <boost/asio.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+
+#include "myDataBase.h"
 
 //namespace tcp = boost::asio::ip::tcp;
 using namespace boost::asio::ip;
@@ -17,26 +19,17 @@ t_chessNetwork::t_chessNetwork()
 {
 }
 
-
-void makeCli(t_sharedData &sharedData)
+void makeConnection(const boost::shared_ptr<tcp::socket> &socket, boost::shared_ptr<t_myDataInfo> myDataInfo )
 {
-   t_chessCli cli(sharedData);
-
-   cli.run();
-}
-
-void makeConnection(const boost::shared_ptr<tcp::socket> &socket)
-{
-   t_sharedData sharedData;
-
-   boost::thread createCli(boost::bind(makeCli,boost::ref(sharedData)));
-   t_chessConnection connection(sharedData,socket);
+   t_connectionData connectionData(myDataInfo);
+   t_chessConnection connection(connectionData,socket);
    connection.run();
 }
 
 void t_chessNetwork::run()
 {
    tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), 1510));
+   boost::shared_ptr<t_myDataInfo> myDataInfo = boost::make_shared<t_myDataInfo>();
 
    while (1)
    {
@@ -44,9 +37,9 @@ void t_chessNetwork::run()
       boost::shared_ptr<tcp::socket> socket = boost::make_shared<tcp::socket>(io_service);
       acceptor.accept(*socket,endpoint);
 
-      std::cout<<"I have recieved a connection at "<<endpoint<<std::endl;
+      std::cout<<"I have recieved a connection at "<<endpoint<<"  "<<socket->is_open()<<std::endl;
 
-      boost::thread connectThread(boost::bind(makeConnection,boost::cref(socket)));
+      boost::thread connectThread(boost::bind(makeConnection,socket,myDataInfo));
    }
 
 

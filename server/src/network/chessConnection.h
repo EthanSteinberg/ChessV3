@@ -7,12 +7,12 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 
-class t_sharedData;
+class t_connectionData;
 
 class t_chessConnection : boost::noncopyable
 {
 public:
-   t_chessConnection(t_sharedData &theSharedData, const boost::shared_ptr<boost::asio::ip::tcp::socket> &theSocket );
+   t_chessConnection(t_connectionData &theSharedData, const boost::shared_ptr<boost::asio::ip::tcp::socket> &theSocket );
 
    void run();
 
@@ -21,7 +21,7 @@ public:
    }
 
 private:
-   t_sharedData &sharedData;
+   t_connectionData &connectionData;
    boost::shared_ptr<boost::asio::ip::tcp::socket> socket;
 };
 

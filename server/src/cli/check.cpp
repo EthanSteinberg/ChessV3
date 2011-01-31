@@ -5,7 +5,7 @@
 #include <cstdio>
 
 #include "chessCli.h"
-#include "../messages.h"
+#include "messages.h"
 
 bool t_chessCli::checkCheck(const t_myVector2 &posTo, const t_myVector2 &oldPos)
 {

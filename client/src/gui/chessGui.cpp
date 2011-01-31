@@ -1,6 +1,6 @@
 #include "chessGui.h"
 
-#include "../messages.h"
+#include "messages.h"
 
 #include <boost/bind.hpp>
 

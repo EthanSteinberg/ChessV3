@@ -7,7 +7,7 @@
 #include <set>
 #include <bitset>
 
-#include "../myvector2.h"
+#include "myvector2.h"
 
 
 class t_sharedData;

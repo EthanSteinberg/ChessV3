@@ -5,7 +5,7 @@
 #include <cstdio>
 
 #include "chessCli.h"
-#include "../messages.h"
+#include "messages.h"
 
 void t_chessCli::generateMoves(const t_myVector2 &pos)
 {
