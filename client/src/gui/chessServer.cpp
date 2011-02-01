@@ -12,8 +12,26 @@
 
 #include <cstring>
 
-bool openServer(CEGUI::FrameWindow *server, const CEGUI::EventArgs &e)
+bool refreshConnect(t_sharedData &sharedData, const CEGUI::EventArgs &e)
 {
+   t_message message;
+
+   message.id = WANT_REFRESH_CONNECTION;
+
+   {
+      boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+      sharedData.gameBuffer.push_front(message);
+   }
+
+   sharedData.gameCondition.notify_one();
+
+   return true;
+}
+
+bool openServer(CEGUI::FrameWindow *server,t_sharedData &sharedData, const CEGUI::EventArgs &e)
+{
+   refreshConnect(sharedData,e);
    server->show();
    return true;
 }
@@ -36,6 +54,7 @@ bool closeConnect(CEGUI::FrameWindow *connect, const CEGUI::EventArgs &e)
    return true;
 }
 
+
 bool connectToServer(CEGUI::Editbox* name, CEGUI::Editbox* ip, t_sharedData &sharedData, const CEGUI::EventArgs &e)
 {
    t_message message;
@@ -51,7 +70,7 @@ bool connectToServer(CEGUI::Editbox* name, CEGUI::Editbox* ip, t_sharedData &sha
    {
       boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
 
-      sharedData.gameBuffer.push_back(message);
+      sharedData.gameBuffer.push_front(message);
    }
 
    sharedData.gameCondition.notify_one();
@@ -67,10 +86,11 @@ void t_chessGui::initServer()
    myRoot->addChildWindow(server);
    server->subscribeEvent(CEGUI::FrameWindow::EventCloseClicked,CEGUI::Event::Subscriber(boost::bind(closeServer,server,_1)));
 
-
    CEGUI::MenuItem *serverItem = static_cast<CEGUI::MenuItem *>(wmgr->getWindow("Root/FrameWindow/Menubar/File/New"));
-   serverItem->subscribeEvent(CEGUI::MenuItem::EventClicked,CEGUI::Event::Subscriber(boost::bind(openServer,server,_1)));
+   serverItem->subscribeEvent(CEGUI::MenuItem::EventClicked,CEGUI::Event::Subscriber(boost::bind(openServer,server,boost::ref(sharedData),_1)));
 
+   CEGUI::PushButton *refreshButton = static_cast<CEGUI::PushButton *>(wmgr->getWindow("Lols5"));
+   refreshButton->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(boost::bind(refreshConnect,boost::ref(sharedData),_1)));
 
    CEGUI::MultiColumnList *testing = static_cast<CEGUI::MultiColumnList *>(wmgr->getWindow("Lols3"));
    testing->addColumn("Names",0,CEGUI::UDim(.25,0));
@@ -114,4 +134,38 @@ void t_chessGui::initConnect()
 
    connect->hide();
 }
+
+void t_chessGui::refreshServer(t_message message)
+{
+
+   CEGUI::MultiColumnList *testing = static_cast<CEGUI::MultiColumnList *>(wmgr->getWindow("Lols3"));
+   testing->resetList();
+
+   t_dataPacket data;
+   char temp[40];
+
+   for (unsigned int i = 0; i< message.dataPackets.size(); i++)
+   {
+      std::cout<<"I am adding the row: "<<i<<std::endl;
+      std::cout<<data.name<<" "<<data.status<<" "<<data.wins<<" "<<std::endl;
+      unsigned int b = testing->addRow();
+      
+      data = message.dataPackets[i];
+      testing->setItem(new CEGUI::ListboxTextItem(data.name),0u,b);
+
+      snprintf(temp,sizeof(temp),"%d",data.status);
+      testing->setItem(new CEGUI::ListboxTextItem(temp),1u,b);
+
+      snprintf(temp,sizeof(temp),"%d",data.wins);
+      testing->setItem(new CEGUI::ListboxTextItem(temp),2u,b);
+
+      snprintf(temp,sizeof(temp),"%d",data.losses);
+      testing->setItem(new CEGUI::ListboxTextItem(temp),3u,b);
+   }
+
+   CEGUI::Window *text = static_cast<CEGUI::Window *>(wmgr->getWindow("Lols"));
+   snprintf(temp,sizeof(temp),"You are connected to: %s",message.refreshConnection.server);
+   text->setText(temp);
+}
+   
 

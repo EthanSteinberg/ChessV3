@@ -12,7 +12,7 @@ class t_connectionData;
 class t_chessConnection : boost::noncopyable
 {
 public:
-   t_chessConnection(t_connectionData &theSharedData, const boost::shared_ptr<boost::asio::ip::tcp::socket> &theSocket );
+   t_chessConnection(boost::shared_ptr<t_connectionData> theSharedData, const boost::shared_ptr<boost::asio::ip::tcp::socket> &theSocket ,boost::asio::ip::tcp::endpoint end);
 
    void run();
 
@@ -21,8 +21,10 @@ public:
    }
 
 private:
-   t_connectionData &connectionData;
+
+   boost::shared_ptr<t_connectionData> connectionData;
    boost::shared_ptr<boost::asio::ip::tcp::socket> socket;
+   boost::asio::ip::tcp::endpoint end;
 };
 
 #endif

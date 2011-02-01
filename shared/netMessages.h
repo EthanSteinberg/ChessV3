@@ -6,7 +6,7 @@
 
 #include "myvector2.h"
 
-enum {NET_BOARD_CLICKED = 100, NET_HIGHLIGHT_SPACE, NET_MOVE_PIECE, NET_CAPTURE_PIECE, NET_JOIN_SERVER, NET_QUIT_MESSAGE};
+enum {NET_BOARD_CLICKED = 100, NET_HIGHLIGHT_SPACE, NET_MOVE_PIECE, NET_CAPTURE_PIECE, NET_JOIN_SERVER, NET_QUIT_MESSAGE, NET_REFRESH_CONNECTION};
 
 struct t_netBoardClicked
 {
@@ -30,6 +30,10 @@ struct t_netJoinServer
    char name[20];
 };
 
+struct t_netRefreshConnection
+{
+   int numOfPackets;
+};
 
 struct t_netMessage
 {
@@ -41,6 +45,7 @@ struct t_netMessage
       t_netHighlightSpace netHighlightSpace;
       t_netMovePiece netMovePiece;
       t_netJoinServer netJoinServer;
+      t_netRefreshConnection netRefreshConnection;
    };
 
 };

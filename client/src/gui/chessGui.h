@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chessCegui.h"
+#include "messages.h"
 
 class t_sharedData;
 
@@ -30,6 +31,8 @@ private:
    void initCegui();
 
    void checkBuffer();
+
+   void refreshServer(t_message message);
 
    t_chessCegui chessCegui;
 

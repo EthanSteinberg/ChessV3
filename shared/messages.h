@@ -6,10 +6,11 @@
 
 #include "myvector2.h"
 //#include "myDataBase.h"
+#include <vector>
 
 #include <string>
 
-enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE, CAPTURE_PIECE, JOIN_SERVER};
+enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE, CAPTURE_PIECE, JOIN_SERVER, REFRESH_CONNECTION, WANT_REFRESH_CONNECTION};
 
 struct t_boardClicked
 {
@@ -34,6 +35,20 @@ struct t_joinServer
    char address[20];
 };
 
+struct t_dataPacket
+{
+   char name[20];
+   int wins;
+   int losses;
+   int status;
+};
+
+struct t_refreshConnection
+{
+   char server[20];
+};
+
+
 struct t_message
 {
    int id;
@@ -44,7 +59,10 @@ struct t_message
       t_highlightSpace highlightSpace;
       t_movePiece movePiece;
       t_joinServer joinServer;
+      t_refreshConnection refreshConnection;
    };
+
+   std::vector<t_dataPacket> dataPackets;
 
 };
 
@@ -73,6 +91,9 @@ struct t_myDataInfo;
 struct t_connectionData
 {
    t_connectionData(boost::shared_ptr<t_myDataInfo> theDataInfo) : connBuffer(100), myDataInfo(theDataInfo)
+   {}
+
+   t_connectionData() : connBuffer(100)
    {}
 
    boost::mutex connMutex;

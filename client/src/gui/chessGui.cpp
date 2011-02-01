@@ -26,7 +26,7 @@ bool quitApp(sf::RenderWindow &App,t_sharedData &sharedData, const CEGUI::EventA
    {
       boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
 
-      sharedData.gameBuffer.push_back(message);
+      sharedData.gameBuffer.push_front(message);
    }
 
    sharedData.gameCondition.notify_one();
@@ -119,13 +119,22 @@ void t_chessGui::checkBuffer()
 
             sprites[boardPieces[oldPos.y][oldPos.x]].SetPosition(pos.x * width, pos.y * height + 20);
             sprites[boardPieces[pos.y][pos.x]].SetPosition(8 * width, 8 * height + 20);
-            
+
 
             boardPieces[pos.y][pos.x] = boardPieces[oldPos.y][oldPos.x];
             //boardPieces[oldPos.y][oldPos.x] = 0;
 
             break;
          }
+
+         case REFRESH_CONNECTION:
+         {
+            std::cout<<"Updating the connection"<<std::endl;
+            refreshServer(message);
+
+            break;
+         }
+
 
 
          default:
@@ -134,7 +143,6 @@ void t_chessGui::checkBuffer()
       }
    }
 }
-
 
 void t_chessGui::drawBoard()
 {
@@ -238,7 +246,7 @@ void t_chessGui::processEvents()
          {
             boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
 
-            sharedData.gameBuffer.push_back(message);
+            sharedData.gameBuffer.push_front(message);
          }
 
          sharedData.gameCondition.notify_one();
@@ -272,7 +280,7 @@ void t_chessGui::processEvents()
             {
                boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
 
-               sharedData.gameBuffer.push_back(message);
+               sharedData.gameBuffer.push_front(message);
             }
 
             sharedData.gameCondition.notify_one();

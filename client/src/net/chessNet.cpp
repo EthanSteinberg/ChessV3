@@ -11,12 +11,9 @@ using namespace boost::asio::ip;
 
 t_chessNet::t_chessNet(t_sharedData &theSharedData) : sharedData(theSharedData) , socket(io_service)
 {
-   //socket.open(tcp::v4());
-
    //tcp::no_delay option(true);
    //socket.set_option(option);
 
-   //Crashes with bad file for some reason
    //boost::asio::socket_base::non_blocking_io option2(true);
    //socket.io_control(option2);
 
@@ -46,7 +43,7 @@ void t_chessNet::run()
       {
          std::cout<<"The name was: "<<message.joinServer.name<<" at a port of: "<<message.joinServer.address<<std::endl;
          connected(message.joinServer.name,message.joinServer.address);
-         break;
+         return;
       }
 
       case QUIT_MESSAGE:
@@ -72,11 +69,11 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
    newNetMessage.id = NET_JOIN_SERVER;
    strcpy(newNetMessage.netJoinServer.name,name.c_str());
 
-   boost::asio::write(socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+   socket.send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
 
    for (;;)
    {
-  // socket.send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+      // socket.send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
       for (;;)
       {
          t_message message;
@@ -97,14 +94,32 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
          {
          case JOIN_SERVER:
          {
-            std::cout<<"The name was: "<<message.joinServer.name<<" at a port of: "<<message.joinServer.address<<std::endl;
+            std::cout<<"The name was: "<<message.joinServer.name<<" at a port of: , but I am already connected"<<message.joinServer.address<<std::endl;
+            break;
+         }
+
+         case WANT_REFRESH_CONNECTION:
+         {
+            std::cout<<"Net has to send the want for connection data over the interwebs"<<std::endl;
+
+            t_netMessage newNetMessage;
+            newNetMessage.id = NET_REFRESH_CONNECTION;
+
+            socket.send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
             break;
          }
 
          case QUIT_MESSAGE:
+         {
             std::cout<<"It told me to quit"<<std::endl;
-            return;
 
+            t_netMessage newNetMessage;
+            newNetMessage.id = NET_QUIT_MESSAGE;
+
+            socket.send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+
+            return;
+         }
          default:
             std::cout<<"And I do not know what it was"<<std::endl;
          }
@@ -113,23 +128,56 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
       for (;;)
       {
          boost::system::error_code ec;
+
          if (!socket.available(ec))
+         {
             break;
+         }
 
          t_netMessage netMessage;
 
          socket.read_some(boost::asio::buffer(&netMessage,sizeof(netMessage)));
+
          switch (netMessage.id)
          {
 
-         case NET_QUIT_MESSAGE:
-            std::cout<<"It told me to quit"<<std::endl;
-            return;
+         case NET_REFRESH_CONNECTION:
+         {
+            t_message message;
 
-         default:
-            std::cout<<"And I do not know what it was"<<std::endl;
+            message.id = REFRESH_CONNECTION;
+            strcpy(message.refreshConnection.server,address.c_str());
+
+            t_dataPacket dataPacket;
+
+            std::cout<<"And the names come in: "<<std::endl;
+            for (int i = 0; i<netMessage.netRefreshConnection.numOfPackets; i++)
+            {
+               socket.read_some(boost::asio::buffer(&dataPacket,sizeof(dataPacket)));
+               std::cout<<dataPacket.name<<std::endl;
+
+               message.dataPackets.push_back(dataPacket);
+            }
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+
+            sharedData.gameCondition.notify_one();
          }
+         break;
+         
+
+      case NET_QUIT_MESSAGE:
+         std::cout<<"It told me to quit"<<std::endl;
+         return;
+
+      default:
+         std::cout<<"And I do not know what it was"<<std::endl;
       }
    }
+}
 
 }

@@ -19,10 +19,10 @@ t_chessNetwork::t_chessNetwork()
 {
 }
 
-void makeConnection(const boost::shared_ptr<tcp::socket> &socket, boost::shared_ptr<t_myDataInfo> myDataInfo )
+void makeConnection(const boost::shared_ptr<tcp::socket> &socket, boost::shared_ptr<t_myDataInfo> myDataInfo , tcp::endpoint end)
 {
-   t_connectionData connectionData(myDataInfo);
-   t_chessConnection connection(connectionData,socket);
+   boost::shared_ptr<t_connectionData>  connectionData= boost::make_shared<t_connectionData>(myDataInfo);
+   t_chessConnection connection(connectionData,socket,end);
    connection.run();
 }
 
@@ -39,7 +39,7 @@ void t_chessNetwork::run()
 
       std::cout<<"I have recieved a connection at "<<endpoint<<"  "<<socket->is_open()<<std::endl;
 
-      boost::thread connectThread(boost::bind(makeConnection,socket,myDataInfo));
+      boost::thread connectThread(boost::bind(makeConnection,socket,myDataInfo,endpoint));
    }
 
 

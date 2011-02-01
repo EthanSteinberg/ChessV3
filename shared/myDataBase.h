@@ -19,10 +19,10 @@ struct t_myData
    int losses;
    int status;
 
-   t_connectionData connectionData;
+   boost::shared_ptr<t_connectionData> connectionData;
 };
 
-typedef std::map<boost::asio::ip::tcp::endpoint, t_myData> t_myDataBase;
+typedef std::map<boost::asio::ip::tcp::endpoint, boost::shared_ptr<t_myData> > t_myDataBase;
 
 
 struct t_myDataInfo

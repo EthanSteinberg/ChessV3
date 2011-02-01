@@ -478,8 +478,39 @@ void t_chessCli::run()
          {
             boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
 
-            sharedData.netBuffer.push_back(message);
+            sharedData.netBuffer.push_front(message);
             sharedData.netCondition.notify_one();
+         }
+
+         break;
+      }
+
+      case WANT_REFRESH_CONNECTION:
+      {
+         std::cout<<"Telling net to refresh my data"<<std::endl;
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+
+            sharedData.netBuffer.push_front(message);
+            sharedData.netCondition.notify_one();
+         }
+
+         break;
+      }
+
+      case REFRESH_CONNECTION:
+      {
+         std::cout<<"Now to shuttle this refresh data to gui"<<std::endl;
+
+         for (auto iter = message.dataPackets.begin(); iter != message.dataPackets.end();iter++)
+            std::cout<<iter->name<<std::endl;
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            sharedData.clientBuffer.push_front(message);
+            sharedData.clientCondition.notify_one();
          }
 
          break;
@@ -491,7 +522,7 @@ void t_chessCli::run()
          {
             boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
 
-            sharedData.netBuffer.push_back(message);
+            sharedData.netBuffer.push_front(message);
             sharedData.netCondition.notify_one();
          }
       } 
