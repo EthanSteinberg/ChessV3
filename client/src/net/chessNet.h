@@ -1,6 +1,7 @@
 #ifndef CHESS_NET_H_INCLUDED
 #define CHESS_NET_H_INCLUDED
 
+<<<<<<< HEAD
 #include <boost/utility.hpp>
 #include <iostream>
 #include <vector>
@@ -15,11 +16,17 @@
 class t_sharedData;
 
 class t_chessNet : boost::noncopyable
+=======
+#include "../messages.h"
+
+class t_chessNet
+>>>>>>> networked
 {
 public:
    t_chessNet(t_sharedData &theSharedData);
 
    void run();
+<<<<<<< HEAD
    void connected(const std::string &name,const std::string &address);
 
    ~t_chessNet()
@@ -35,4 +42,12 @@ private:
 
 };
 
+=======
+
+private:
+   t_sharedData &sharedData;
+};
+
+
+>>>>>>> networked
 #endif
