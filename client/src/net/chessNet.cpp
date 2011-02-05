@@ -18,10 +18,6 @@ t_chessNet::t_chessNet(t_sharedData &theSharedData) : sharedData(theSharedData) 
    //socket.io_control(option2);
 
 }
-#include <iostream>
-
-t_chessNet::t_chessNet(t_sharedData &theSharedData) : sharedData(theSharedData)
-{}
 
 void t_chessNet::run()
 {
@@ -39,24 +35,16 @@ void t_chessNet::run()
          message = sharedData.netBuffer.back();
          sharedData.netBuffer.pop_back();
       }
-
-
       std::cout<<"I have recieved a message"<<std::endl;
 
       switch (message.id)
       {
-<<<<<<< HEAD
       case JOIN_SERVER:
       {
          std::cout<<"The name was: "<<message.joinServer.name<<" at a port of: "<<message.joinServer.address<<std::endl;
          connected(message.joinServer.name,message.joinServer.address);
          return;
       }
-=======
-
-      case CONNECT_SERVER:
-         std::cout<<"Connecting to server"<<std::endl;
->>>>>>> networked
 
       case QUIT_MESSAGE:
          std::cout<<"It told me to quit"<<std::endl;
@@ -66,7 +54,6 @@ void t_chessNet::run()
          std::cout<<"And I do not know what it was"<<std::endl;
       }
    }
-<<<<<<< HEAD
 }
 
 
@@ -191,11 +178,6 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
          std::cout<<"And I do not know what it was"<<std::endl;
       }
    }
-<<<<<<< HEAD
 }
-=======
-=======
->>>>>>> networked
->>>>>>> 84c28bdc8164d594d409cd821a35fa8dfe490b0c
 
 }

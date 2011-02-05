@@ -471,7 +471,6 @@ void t_chessCli::run()
          break;
       }
 
-<<<<<<< HEAD
       case JOIN_SERVER:
       {
          std::cout<<"Telling net to join the server"<<std::endl;
@@ -485,10 +484,6 @@ void t_chessCli::run()
 
          break;
       }
-=======
-      case CONNECT_SERVER:
-         std::cout<<"Connecting to server"<<std::endl;
->>>>>>> networked
 
       case WANT_REFRESH_CONNECTION:
       {
