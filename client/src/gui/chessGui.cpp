@@ -43,6 +43,7 @@ void t_chessGui::run()
    initCegui();
    initServer();
    initConnect();
+   initMessage();
 
    RedBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,0,0));
    BlackBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(0,255,0));
@@ -135,8 +136,37 @@ void t_chessGui::checkBuffer()
             break;
          }
 
+         case CONNECTION_SUCCESS:
+         {
+            std::cout<<"Showing the dialog box for good connect"<<std::endl;
+            showMessage("Congrats you were able to connect");
 
+            break;
+         }
 
+         case CONNECTION_BAD_NAME:
+         {
+            std::cout<<"Showing the dialog box for bad name"<<std::endl;
+            showMessage("Your name was invalid");
+
+            break;
+         }
+
+         case CONNECTION_NO_SERVER:
+         {
+            std::cout<<"Showing the dialog box for no server"<<std::endl;
+            showMessage("The server did not respond");
+
+            break;
+         }
+
+         case CONNECTION_FAILED:
+         {
+            std::cout<<"Connection failed showing"<<std::endl;
+            showMessage("The connection has failed somehow...");
+
+            break;
+         }
          default:
             std::cout<<"The client does not know what it recieved"<<std::endl;
          }

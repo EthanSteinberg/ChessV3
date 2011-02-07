@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<GUILayout>
+   <Window Type="TaharezLook/FrameWindow" Name="messageWindow">
+      <Property Name="UnifiedPosition" Value="{ {0.25, 0}, {0.25, 0} }" />
+      <Property Name="UnifiedSize" Value="{ {0.25, 0}, {0.15, 0} }" />
+      <Property Name="Text" Value="Hello World!" />
+
+      <Window Type="TaharezLook/StaticText" Name="messageWindow/text">
+         <Property Name="Text" Value="Unitialized message" />
+         <Property Name="UnifiedPosition" Value="{ {.05, 0}, {.1, 0} }" />
+         <Property Name="UnifiedSize" Value="{ {.9, 0}, {.3, 0} }" />
+        <Property Name="FrameEnabled" Value="False" />
+      </Window>
+
+      <Window Type="TaharezLook/Button" Name="messageWindow/button">
+         <Property Name="Text" Value="Ok" />
+         <Property Name="UnifiedPosition" Value="{ {.35, 0}, {.75, 0} }" />
+         <Property Name="UnifiedSize" Value="{ {.30, 0}, {.2, 0} }" />
+      </Window>
+
+   </Window>
+ </GUILayout>

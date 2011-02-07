@@ -37,6 +37,8 @@ int main(int argv, char **argc)
       t_chessGui gui(sharedData);
 
       gui.run();
+      cliThread.join();
+      netThread.join();
    }
 
    catch(std::exception &exception)

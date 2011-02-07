@@ -26,6 +26,7 @@ private:
    void loadImages();
    void loadSprites();
 
+   void initMessage();
    void initServer();
    void initConnect();
    void initCegui();
@@ -33,6 +34,7 @@ private:
    void checkBuffer();
 
    void refreshServer(t_message message);
+   void showMessage(std::string message);
 
    t_chessCegui chessCegui;
 

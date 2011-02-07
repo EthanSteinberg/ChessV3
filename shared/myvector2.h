@@ -6,8 +6,8 @@
 struct t_myVector2
 {
 public:
-   int x;
-   int y;
+   uint8_t x;
+   uint8_t y;
 
    bool operator==(const t_myVector2 &vec) const
    {
@@ -16,7 +16,7 @@ public:
 
    bool operator<(const t_myVector2 &vec) const
    {
-      return (x*x + y*y < vec.x * vec.x + vec.y * vec.y);
+      return (x*10 + y < vec.x * 10 + vec.y );
    }
 
    t_myVector2 operator-(const t_myVector2 &vec) const
@@ -32,7 +32,7 @@ public:
 
    friend std::ostream &operator<<(std::ostream &out, const t_myVector2 &vec)
    {
-      out<<vec.x<<' '<<vec.y;
+      out<<(int)vec.x<<' '<<(int)vec.y;
       
       return out;
    }

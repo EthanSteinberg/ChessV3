@@ -4,6 +4,7 @@ set(HDRS
  
 set(SRCS
       chessNet.cpp
+      connected.cpp
 )
 
 add_library(ChessNet ${HDRS} ${SRCS})

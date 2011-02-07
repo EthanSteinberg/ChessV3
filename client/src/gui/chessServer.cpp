@@ -45,17 +45,33 @@ bool closeServer(CEGUI::FrameWindow *server, const CEGUI::EventArgs &e)
 bool openConnect(CEGUI::FrameWindow *connect, const CEGUI::EventArgs &e)
 {
    connect->show();
+   connect->setModalState(true);
    return true;
 }
 
 bool closeConnect(CEGUI::FrameWindow *connect, const CEGUI::EventArgs &e)
 {
    connect->hide();
+   connect->setModalState(false);
+   return true;
+}
+
+bool openMessage(CEGUI::FrameWindow *connect, const CEGUI::EventArgs &e)
+{
+   connect->show();
+   connect->setModalState(true);
+   return true;
+}
+
+bool closeMessage(CEGUI::FrameWindow *connect, const CEGUI::EventArgs &e)
+{
+   connect->hide();
+   connect->setModalState(false);
    return true;
 }
 
 
-bool connectToServer(CEGUI::Editbox* name, CEGUI::Editbox* ip, t_sharedData &sharedData, const CEGUI::EventArgs &e)
+bool connectToServer(CEGUI::FrameWindow *connect, CEGUI::Editbox* name, CEGUI::Editbox* ip, t_sharedData &sharedData, const CEGUI::EventArgs &e)
 {
    t_message message;
 
@@ -75,6 +91,8 @@ bool connectToServer(CEGUI::Editbox* name, CEGUI::Editbox* ip, t_sharedData &sha
 
    sharedData.gameCondition.notify_one();
 
+   connect->hide();
+   connect->setModalState(false);
 
    return true;
 }
@@ -130,7 +148,7 @@ void t_chessGui::initConnect()
 
 
    CEGUI::PushButton *startConnection = static_cast<CEGUI::PushButton *>(wmgr->getWindow("1Lols4"));
-   startConnection->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(boost::bind(connectToServer,name,ip,boost::ref(sharedData),_1)));
+   startConnection->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(boost::bind(connectToServer,connect,name,ip,boost::ref(sharedData),_1)));
 
    connect->hide();
 }
@@ -168,4 +186,30 @@ void t_chessGui::refreshServer(t_message message)
    text->setText(temp);
 }
    
+void t_chessGui::initMessage()
+{
+   CEGUI::FrameWindow *message = static_cast<CEGUI::FrameWindow *>(wmgr->loadWindowLayout("message.layout"));
+
+   myRoot->addChildWindow(message);
+   message->subscribeEvent(CEGUI::FrameWindow::EventCloseClicked,CEGUI::Event::Subscriber(boost::bind(closeMessage,message,_1)));
+
+   CEGUI::MenuItem *messageItem = static_cast<CEGUI::MenuItem *>(wmgr->getWindow("Root/FrameWindow/Menubar/File/Close"));
+   messageItem->subscribeEvent(CEGUI::MenuItem::EventClicked,CEGUI::Event::Subscriber(boost::bind(openMessage,message,_1)));
+
+   CEGUI::PushButton *okMessage = static_cast<CEGUI::PushButton *>(wmgr->getWindow("messageWindow/button"));
+   okMessage->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(boost::bind(closeMessage,message,_1)));
+   message->hide();
+}
+
+void t_chessGui::showMessage(std::string textStuff)
+{
+   CEGUI::FrameWindow *message = static_cast<CEGUI::FrameWindow *>(wmgr->getWindow("messageWindow"));
+
+   CEGUI::Window *text = static_cast<CEGUI::Window *>(wmgr->getWindow("messageWindow/text"));
+   //snprintf(temp,sizeof(temp),"You are connected to: %s",message.refreshConnection.server);
+   text->setText(textStuff.c_str());
+   
+   message->show();
+   message->setModalState(true);
+}
 

@@ -6,7 +6,9 @@
 
 #include "myvector2.h"
 
-enum {NET_BOARD_CLICKED = 100, NET_HIGHLIGHT_SPACE, NET_MOVE_PIECE, NET_CAPTURE_PIECE, NET_JOIN_SERVER, NET_QUIT_MESSAGE, NET_REFRESH_CONNECTION};
+#include <cstdint>
+
+enum {NET_BOARD_CLICKED = 100, NET_HIGHLIGHT_SPACE, NET_MOVE_PIECE, NET_CAPTURE_PIECE, NET_JOIN_SERVER, NET_QUIT_MESSAGE, NET_REFRESH_CONNECTION, NET_CONNECTION_SUCCESS, NET_CONNECTION_BAD_NAME};
 
 struct t_netBoardClicked
 {
@@ -16,7 +18,7 @@ struct t_netBoardClicked
 struct t_netHighlightSpace
 {
    t_myVector2 pos;
-   int color;
+   uint8_t color;
 };
 
 struct t_netMovePiece
@@ -32,12 +34,12 @@ struct t_netJoinServer
 
 struct t_netRefreshConnection
 {
-   int numOfPackets;
+   uint8_t numOfPackets;
 };
 
 struct t_netMessage
 {
-   int id;
+   uint8_t id;
 
    union 
    {

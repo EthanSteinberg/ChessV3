@@ -5,6 +5,7 @@
 #include "myDataBase.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/foreach.hpp>
 
 #include <iostream>
 
@@ -82,6 +83,37 @@ void t_chessConnection::run()
          {
             std::cout<<"The name was: "<<netMessage.netJoinServer.name<<std::endl;
 
+
+            //std::pair<tcp::endpoint, boost::shared_ptr<t_myData> > myDataTemp;
+            int found = 0;
+
+            {
+               boost::unique_lock<boost::shared_mutex> lock(connectionData->myDataInfo->myDataMutex);
+
+               BOOST_FOREACH( auto myDataTemp,  connectionData->myDataInfo->myDataBase)
+               {
+                  if (!myDataTemp.second)
+                     continue;
+
+                  if (myDataTemp.second->name == std::string(netMessage.netJoinServer.name))
+                  {
+                     found = 1;
+                     break;
+                  }
+               }
+
+            }
+
+            if (found == 1)
+            {
+               t_netMessage newNetMessage;
+
+               newNetMessage.id = NET_CONNECTION_BAD_NAME;
+               socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+               return;
+            }
+
+
             boost::shared_ptr<t_myData> myData = boost::make_shared<t_myData>();
 
             myData->name = netMessage.netJoinServer.name;
@@ -95,6 +127,11 @@ void t_chessConnection::run()
 
                connectionData->myDataInfo->myDataBase.insert(std::make_pair(end,myData));
             }
+
+            t_netMessage newNetMessage;
+
+            newNetMessage.id = NET_CONNECTION_SUCCESS;
+            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
 
             break;
          }

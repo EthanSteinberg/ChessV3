@@ -11,6 +11,7 @@
 
 
 class t_sharedData;
+class t_message;
 
 class t_chessCli : boost::noncopyable
 {
@@ -31,6 +32,15 @@ private:
    bool checkCheckmate();
 
    void addPieceMoves(const t_myVector2 &pos, std::bitset<64> &defendingPieces);
+
+   bool processMessageSingle(const t_message &message);
+   bool processMessageConnected(const t_message &message);
+   void boardClickedSingle(const t_message &message);
+
+
+   void castleMove(t_myVector2 pos);
+   void attackMove( t_myVector2 pos);
+   void moveMove(t_myVector2 pos);
 
    std::vector<t_myVector2> move;
    std::vector<t_myVector2> hit;
@@ -56,6 +66,8 @@ private:
 
    std::set<t_myVector2> whitePieces;
    std::set<t_myVector2> blackPieces;
+
+   bool connected;
 };
 
 #endif
