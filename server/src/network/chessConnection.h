@@ -8,6 +8,7 @@
 #include <boost/asio.hpp>
 
 class t_connectionData;
+class t_sharedGame;
 
 class t_chessConnection : boost::noncopyable
 {
@@ -25,6 +26,12 @@ private:
    boost::shared_ptr<t_connectionData> connectionData;
    boost::shared_ptr<boost::asio::ip::tcp::socket> socket;
    boost::asio::ip::tcp::endpoint end;
+
+   bool playing;
+
+   boost::shared_ptr<t_connectionData> partner;
+   boost::shared_ptr<t_sharedGame> sharedGame;
+   
 };
 
 #endif

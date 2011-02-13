@@ -8,7 +8,8 @@
 
 #include <cstdint>
 
-enum {NET_BOARD_CLICKED = 100, NET_HIGHLIGHT_SPACE, NET_MOVE_PIECE, NET_CAPTURE_PIECE, NET_JOIN_SERVER, NET_QUIT_MESSAGE, NET_REFRESH_CONNECTION, NET_CONNECTION_SUCCESS, NET_CONNECTION_BAD_NAME};
+enum {NET_BOARD_CLICKED = 100, NET_HIGHLIGHT_SPACE, NET_MOVE_PIECE, NET_CAPTURE_PIECE, NET_JOIN_SERVER, NET_QUIT_MESSAGE, NET_REFRESH_CONNECTION, NET_CONNECTION_SUCCESS, NET_CONNECTION_BAD_NAME, NET_DISCONNECT, 
+   NET_WANT_TO_PLAY_WITH, NET_PLAY_REQUEST, NET_PLAY_RESPONSE, NET_PLAY_ACCEPTED, NET_PLAY_REJECTED};
 
 struct t_netBoardClicked
 {
@@ -37,6 +38,22 @@ struct t_netRefreshConnection
    uint8_t numOfPackets;
 };
 
+struct t_netWantToPlayWith
+{
+   char name[20];
+};
+
+struct t_netPlayRequest
+{
+   char name[20];
+};
+
+struct t_netPlayResponse
+{
+   char name[20];
+   uint8_t response;
+};
+
 struct t_netMessage
 {
    uint8_t id;
@@ -48,6 +65,9 @@ struct t_netMessage
       t_netMovePiece netMovePiece;
       t_netJoinServer netJoinServer;
       t_netRefreshConnection netRefreshConnection;
+      t_netWantToPlayWith netWantToPlayWith;
+      t_netPlayResponse netPlayResponse;
+      t_netPlayRequest netPlayRequest;
    };
 
 };

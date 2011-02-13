@@ -20,7 +20,7 @@ public:
    t_chessNet(t_sharedData &theSharedData);
 
    void run();
-   void connected(const std::string &name,const std::string &address);
+   bool connected(const std::string &name,const std::string &address);
 
    ~t_chessNet()
    {

@@ -10,12 +10,13 @@
 #include "myvector2.h"
 
 
-class t_sharedData;
+class t_sharedGame;
+class t_message;
 
 class t_chessCli : boost::noncopyable
 {
 public:
-   t_chessCli(t_sharedData &theSharedData);
+   t_chessCli(t_sharedGame &theSharedGame);
 
    void run();
 
@@ -32,11 +33,22 @@ private:
 
    void addPieceMoves(const t_myVector2 &pos, std::bitset<64> &defendingPieces);
 
+   bool processMessageSingle(const t_message &message);
+   bool processMessageConnected(const t_message &message);
+   void boardClickedSingle(const t_message &message);
+
+   bool processMessageServer(const t_message &message);
+   void boardClickedServer(const t_message &message);
+
+   void castleMove(t_myVector2 pos);
+   void attackMove( t_myVector2 pos);
+   void moveMove(t_myVector2 pos);
+
    std::vector<t_myVector2> move;
    std::vector<t_myVector2> hit;
    std::vector<t_myVector2> castle;
 
-   t_sharedData &sharedData;
+   t_sharedGame &sharedGame;
 
    char board[8][8];
 

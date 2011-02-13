@@ -9,7 +9,7 @@
 
 using namespace boost::asio::ip;
 
-void t_chessNet::connected(const std::string &name, const std::string &address)
+bool t_chessNet::connected(const std::string &name, const std::string &address)
 {
    tcp::resolver resolver(io_service);
    tcp::resolver::query query(tcp::v4(), address, "1510");
@@ -37,7 +37,7 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
             }
 
             sharedData.gameCondition.notify_one();
-         return;
+         return 0;
       }
 
       else
@@ -93,6 +93,57 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
             break;
          }
 
+         case WANT_TO_PLAY_WITH:
+         {
+            std::cout<<"Net wants to play with a person"<<std::endl;
+
+            t_netMessage aNewNetMessage;
+            aNewNetMessage.id =  NET_WANT_TO_PLAY_WITH;
+
+            strcpy (aNewNetMessage.netWantToPlayWith.name,message.wantToPlayWith.name);
+            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            break;
+         }
+
+         case BOARD_CLICKED:
+         {
+            std::cout<<"Net telling the server that the board was clicked"<<std::endl;
+
+            t_netMessage aNewNetMessage;
+            aNewNetMessage.id =  NET_BOARD_CLICKED;
+            aNewNetMessage.netBoardClicked.pos = message.boardClicked.pos;
+
+            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            break;
+         }
+
+         case PLAY_RESPONSE:
+         {
+            std::cout<<"I have gotten a response from the request"<<std::endl;
+
+            t_netMessage aNewNetMessage;
+            aNewNetMessage.id =  NET_PLAY_RESPONSE;
+            
+            aNewNetMessage.netPlayResponse.response = message.playResponse.response;
+
+            strcpy (aNewNetMessage.netPlayResponse.name,message.playResponse.name);
+            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            break;
+         }
+
+         case DISCONNECT_MESSAGE:
+         {
+            std::cout<<"I was told to disconnect"<<std::endl;
+
+            t_netMessage aNewNetMessage;
+            aNewNetMessage.id = NET_QUIT_MESSAGE;
+
+            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            socket.close();
+
+            return 0;
+         }
+
          case QUIT_MESSAGE:
          {
             std::cout<<"It told me to quit"<<std::endl;
@@ -102,7 +153,7 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
 
             socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
 
-            return;
+            return 1;
          }
          default:
             std::cout<<"And I do not know what it was"<<std::endl;
@@ -124,6 +175,60 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
 
          switch (netMessage.id)
          {
+
+         case NET_PLAY_REQUEST:
+         {
+            std::cout<<"Someone wants to play with me "<<netMessage.netPlayRequest.name<<std::endl;
+
+            t_message message;
+            
+            message.id = PLAY_REQUEST;
+            strcpy(message.playRequest.name,netMessage.netPlayRequest.name);
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+            sharedData.gameCondition.notify_one();
+
+            break;
+         }
+
+         case NET_PLAY_ACCEPTED:
+         {
+            std::cout<<"play accepted "<<netMessage.netPlayRequest.name<<std::endl;
+
+            t_message message;
+            
+            message.id = PLAY_ACCEPTED;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+            sharedData.gameCondition.notify_one();
+
+            break;
+         }
+         case NET_PLAY_REJECTED:
+         {
+            std::cout<<"play rejected "<<netMessage.netPlayRequest.name<<std::endl;
+
+            t_message message;
+            
+            message.id = PLAY_REJECTED;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+            sharedData.gameCondition.notify_one();
+
+            break;
+         }
 
          case NET_REFRESH_CONNECTION:
          {
@@ -169,8 +274,65 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
             }
 
             sharedData.gameCondition.notify_one();
-         }
          break;
+         }
+
+         case NET_HIGHLIGHT_SPACE:
+         {
+            std::cout<<"net highlight space"<<std::endl;
+
+            t_message message;
+            message.id = HIGHLIGHT_SPACE;
+            message.highlightSpace.pos = netMessage.netHighlightSpace.pos;
+            message.highlightSpace.color = netMessage.netHighlightSpace.color;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+
+            sharedData.gameCondition.notify_one();
+         break;
+         }
+
+         case NET_MOVE_PIECE:
+         {
+            std::cout<<"net highlight space"<<std::endl;
+
+            t_message message;
+            message.id = MOVE_PIECE;
+            message.movePiece.pos = netMessage.netMovePiece.pos;
+            message.movePiece.oldPos = netMessage.netMovePiece.oldPos;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+
+            sharedData.gameCondition.notify_one();
+         break;
+         }
+
+         case NET_CAPTURE_PIECE:
+         {
+            std::cout<<"net highlight space"<<std::endl;
+
+            t_message message;
+            message.id = CAPTURE_PIECE;
+            message.movePiece.pos = netMessage.netMovePiece.pos;
+            message.movePiece.oldPos = netMessage.netMovePiece.oldPos;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+
+            sharedData.gameCondition.notify_one();
+         break;
+         }
 
          case NET_CONNECTION_BAD_NAME:
          {
@@ -189,11 +351,11 @@ void t_chessNet::connected(const std::string &name, const std::string &address)
             sharedData.gameCondition.notify_one();
             socket.close();
          }
-         return;
+         return 0;
 
          case NET_QUIT_MESSAGE:
             std::cout<<"It told me to quit"<<std::endl;
-            return;
+            return 1;
 
          default:
             std::cout<<"And I do not know what it was"<<std::endl;

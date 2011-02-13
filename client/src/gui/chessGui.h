@@ -22,11 +22,12 @@ public:
 private:
    void processEvents();
    void drawBoard();
-   
+
    void loadImages();
    void loadSprites();
 
    void initMessage();
+   void initRequest();
    void initServer();
    void initConnect();
    void initCegui();
@@ -35,6 +36,7 @@ private:
 
    void refreshServer(t_message message);
    void showMessage(std::string message);
+   void showRequest(std::string message);
 
    t_chessCegui chessCegui;
 
@@ -67,5 +69,15 @@ private:
    int newWidth;
    int newHeight;
 };
+
+class MyListItem : public CEGUI::ListboxTextItem
+{
+public:
+   MyListItem(const CEGUI::String &text) : ListboxTextItem(text)
+   {
+      setSelectionBrushImage("TaharezLook", "MultiListSelectionBrush");
+   }
+};
+
 
 #endif

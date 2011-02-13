@@ -10,11 +10,18 @@
 
 #include <string>
 
-enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE, CAPTURE_PIECE, JOIN_SERVER, REFRESH_CONNECTION, WANT_REFRESH_CONNECTION, CONNECTION_SUCCESS, CONNECTION_BAD_NAME, CONNECTION_NO_SERVER, CONNECTION_FAILED};
+struct t_connectionData;
+struct t_sharedGame;
+
+enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE, CAPTURE_PIECE, 
+   JOIN_SERVER, REFRESH_CONNECTION, WANT_REFRESH_CONNECTION, CONNECTION_SUCCESS, CONNECTION_BAD_NAME, CONNECTION_NO_SERVER, CONNECTION_FAILED, DISCONNECT_MESSAGE, 
+   WANT_TO_PLAY_WITH, PLAY_REQUEST, PLAY_RESPONSE, PLAY_ACCEPTED, PLAY_REJECTED, PASS_GAME};
+
 
 struct t_boardClicked
 {
    t_myVector2 pos;
+   int turn;
 };
 
 struct t_highlightSpace
@@ -48,6 +55,26 @@ struct t_refreshConnection
    char server[20];
 };
 
+struct t_wantToPlayWith
+{
+   char name[20];
+};
+
+struct t_playResponse
+{
+   char name[20];
+   bool response;
+};
+
+struct t_playRequest
+{
+   char name[20];
+};
+
+struct t_gamePass
+{
+   t_sharedGame *sharedGame;
+};
 
 struct t_message
 {
@@ -60,6 +87,10 @@ struct t_message
       t_movePiece movePiece;
       t_joinServer joinServer;
       t_refreshConnection refreshConnection;
+      t_wantToPlayWith wantToPlayWith;
+      t_playResponse playResponse;
+      t_playRequest playRequest;
+      t_gamePass gamePass;
    };
 
    std::vector<t_dataPacket> dataPackets;
@@ -100,6 +131,70 @@ struct t_connectionData
    t_messageBuffer connBuffer;
 
    boost::shared_ptr<t_myDataInfo> myDataInfo;
+};
+
+struct t_sharedGame
+{
+   t_sharedGame(boost::shared_ptr<t_connectionData> firstPlayer, boost::shared_ptr<t_connectionData> secondPlayer) :
+      firstMutex(firstPlayer->connMutex),secondMutex(secondPlayer->connMutex),
+      firstBuffer(firstPlayer->connBuffer),secondBuffer(secondPlayer->connBuffer),
+      gameBuffer(100)
+   {}
+
+   boost::mutex &firstMutex;
+   boost::mutex &secondMutex;
+   boost::mutex gameMutex;
+
+   boost::condition_variable gameCondition;
+
+   t_messageBuffer &firstBuffer;
+   t_messageBuffer &secondBuffer;
+   t_messageBuffer gameBuffer;
+
+   void pushToBoth(const t_message &message)
+   {
+      {
+         boost::unique_lock<boost::mutex> lock(firstMutex);
+
+         firstBuffer.push_front(message);
+      }
+
+      {
+         boost::unique_lock<boost::mutex> lock(secondMutex);
+
+         secondBuffer.push_front(message);
+      }
+   }
+
+   void pushToOne(const t_message &message, bool turn)
+   {
+      if (turn == 0)
+      {
+         boost::unique_lock<boost::mutex> lock(firstMutex);
+
+         firstBuffer.push_front(message);
+      }
+
+      else
+      {
+         boost::unique_lock<boost::mutex> lock(secondMutex);
+
+         secondBuffer.push_front(message);
+      }
+   }
+
+   void pushToGame(t_message &message, bool turn)
+   {
+      message.boardClicked.turn = turn;
+      {
+         boost::unique_lock<boost::mutex> lock(gameMutex);
+
+         gameBuffer.push_front(message);
+      }
+
+      gameCondition.notify_one();
+   }
+
 };
 
 #endif

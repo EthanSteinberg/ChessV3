@@ -43,7 +43,7 @@ void t_chessNet::run()
       case JOIN_SERVER:
       {
          std::cout<<"The name was: "<<message.joinServer.name<<" at a port of: "<<message.joinServer.address<<std::endl;
-         connected(message.joinServer.name,message.joinServer.address);
+         int quit = connected(message.joinServer.name,message.joinServer.address);
 
          t_message newMessage;
          newMessage.id = CONNECTION_FAILED;
@@ -54,6 +54,9 @@ void t_chessNet::run()
             }
 
             sharedData.gameCondition.notify_one();
+
+         if (quit == 1)
+            return;
 
          break;
       }

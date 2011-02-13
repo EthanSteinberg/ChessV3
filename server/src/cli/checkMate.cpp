@@ -16,6 +16,7 @@ void printBit(const std::bitset<64> &set)
       {
          std::cout<<set[y *8 + x];
       }
+
       std::cout<<std::endl;
    }
 }
@@ -151,11 +152,12 @@ bool t_chessCli::checkCheckmate()
    while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
    {
       spaces.push_back(square);
+
       if (board[square.y][square.x] != 0)
       {
          if (!blocked)
          {
-            if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 4 || board[square.y][square.x]%8 == 6))
+            if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 2 || board[square.y][square.x]%8 == 6))
             {
                for (auto iter = spaces.begin(); iter != spaces.end(); iter++)
                {
@@ -172,10 +174,15 @@ bool t_chessCli::checkCheckmate()
                   block = square;
                   blocked = 1;
                }
+
+               else
+               {
+                  break;
+               }
             }
          }
 
-         else if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 4 || board[square.y][square.x]%8 == 6))
+         else if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 2 || board[square.y][square.x]%8 == 6))
          {
             defendingPieces.push_back(block);
             break;
@@ -189,6 +196,7 @@ bool t_chessCli::checkCheckmate()
 
       square.y+= +1;
    }
+
    spaces.clear();
    blocked = 0;
 
@@ -198,11 +206,12 @@ bool t_chessCli::checkCheckmate()
    while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
    {
       spaces.push_back(square);
+
       if (board[square.y][square.x] != 0)
       {
          if (!blocked)
          {
-            if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 4 || board[square.y][square.x]%8 == 6))
+            if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 2 || board[square.y][square.x]%8 == 6))
             {
                for (auto iter = spaces.begin(); iter != spaces.end(); iter++)
                {
@@ -219,10 +228,15 @@ bool t_chessCli::checkCheckmate()
                   block = square;
                   blocked = 1;
                }
+
+               else
+               {
+                  break;
+               }
             }
          }
 
-         else if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 4 || board[square.y][square.x]%8 == 6))
+         else if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 2 || board[square.y][square.x]%8 == 6))
          {
             defendingPieces.push_back(block);
             break;
@@ -236,6 +250,7 @@ bool t_chessCli::checkCheckmate()
 
       square.y+=-1;
    }
+
    spaces.clear();
    blocked = 0;
 
@@ -245,11 +260,12 @@ bool t_chessCli::checkCheckmate()
    while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
    {
       spaces.push_back(square);
+
       if (board[square.y][square.x] != 0)
       {
          if (!blocked)
          {
-            if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 4 || board[square.y][square.x]%8 == 6))
+            if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 2 || board[square.y][square.x]%8 == 6))
             {
                for (auto iter = spaces.begin(); iter != spaces.end(); iter++)
                {
@@ -266,10 +282,15 @@ bool t_chessCli::checkCheckmate()
                   block = square;
                   blocked = 1;
                }
+
+               else
+               {
+                  break;
+               }
             }
          }
 
-         else if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 4 || board[square.y][square.x]%8 == 6))
+         else if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 2 || board[square.y][square.x]%8 == 6))
          {
             defendingPieces.push_back(block);
             break;
@@ -283,6 +304,7 @@ bool t_chessCli::checkCheckmate()
 
       square.x+= +1;
    }
+
    spaces.clear();
    blocked = 0;
 
@@ -292,11 +314,12 @@ bool t_chessCli::checkCheckmate()
    while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
    {
       spaces.push_back(square);
+
       if (board[square.y][square.x] != 0)
       {
          if (!blocked)
          {
-            if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 4 || board[square.y][square.x]%8 == 6))
+            if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 2 || board[square.y][square.x]%8 == 6))
             {
                for (auto iter = spaces.begin(); iter != spaces.end(); iter++)
                {
@@ -313,10 +336,15 @@ bool t_chessCli::checkCheckmate()
                   block = square;
                   blocked = 1;
                }
+
+               else
+               {
+                  break;
+               }
             }
          }
 
-         else if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 4 || board[square.y][square.x]%8 == 6))
+         else if (board[square.y][square.x]/8 != color && (board[square.y][square.x]%8 == 2 || board[square.y][square.x]%8 == 6))
          {
             defendingPieces.push_back(block);
             break;
@@ -330,6 +358,7 @@ bool t_chessCli::checkCheckmate()
 
       square.x+=-1;
    }
+
    spaces.clear();
    blocked = 0;
 
@@ -342,6 +371,7 @@ bool t_chessCli::checkCheckmate()
    while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
    {
       spaces.push_back(square);
+
       if (board[square.y][square.x] != 0)
       {
          if (!blocked)
@@ -362,6 +392,11 @@ bool t_chessCli::checkCheckmate()
                {
                   block = square;
                   blocked = 1;
+               }
+
+               else
+               {
+                  break;
                }
             }
          }
@@ -381,6 +416,7 @@ bool t_chessCli::checkCheckmate()
       square.x+= 1;
       square.y+= 1;
    }
+
    spaces.clear();
    blocked = 0;
 
@@ -390,6 +426,7 @@ bool t_chessCli::checkCheckmate()
    while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
    {
       spaces.push_back(square);
+
       if (board[square.y][square.x] != 0)
       {
          if (!blocked)
@@ -410,6 +447,11 @@ bool t_chessCli::checkCheckmate()
                {
                   block = square;
                   blocked = 1;
+               }
+
+               else
+               {
+                  break;
                }
             }
          }
@@ -429,6 +471,7 @@ bool t_chessCli::checkCheckmate()
       square.x+= -1;
       square.y+= 1;
    }
+
    spaces.clear();
    blocked = 0;
 
@@ -438,6 +481,7 @@ bool t_chessCli::checkCheckmate()
    while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
    {
       spaces.push_back(square);
+
       if (board[square.y][square.x] != 0)
       {
          if (!blocked)
@@ -458,6 +502,11 @@ bool t_chessCli::checkCheckmate()
                {
                   block = square;
                   blocked = 1;
+               }
+
+               else
+               {
+                  break;
                }
             }
          }
@@ -477,6 +526,7 @@ bool t_chessCli::checkCheckmate()
       square.x+= +1;
       square.y+= -1;
    }
+
    spaces.clear();
    blocked = 0;
 
@@ -486,6 +536,7 @@ bool t_chessCli::checkCheckmate()
    while (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
    {
       spaces.push_back(square);
+
       if (board[square.y][square.x] != 0)
       {
          if (!blocked)
@@ -507,6 +558,11 @@ bool t_chessCli::checkCheckmate()
                   block = square;
                   blocked = 1;
                }
+
+               else
+               {
+                  break;
+               }
             }
          }
 
@@ -525,6 +581,7 @@ bool t_chessCli::checkCheckmate()
       square.x+=-1;
       square.y+=-1;
    }
+
    spaces.clear();
    blocked = 0;
 
@@ -634,6 +691,7 @@ bool t_chessCli::checkCheckmate()
 
    else
    {
+      std::cout<<"I am being attacked"<<std::endl;
       printBit(attackingSquares);
       std::cout<<std::endl;
    }
@@ -642,6 +700,7 @@ bool t_chessCli::checkCheckmate()
    {
       if (std::find(defendingPieces.begin(), defendingPieces.end(), *iter) == defendingPieces.end())
       {
+         std::cout<<*iter<<" is moving\n";
          addPieceMoves(*iter,movingSquares);
       }
 
@@ -670,7 +729,7 @@ bool t_chessCli::checkCheckmate()
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
 
-      if (board[square.x][square.y]/8 != color && checkCheck(square,pos) == 0)
+      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square<<std::endl;
@@ -681,27 +740,29 @@ bool t_chessCli::checkCheckmate()
    square.y = pos.y - 1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if (board[square.x][square.y]/8 != color && checkCheck(square,pos) == 0)
+      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square<<std::endl;
          return 0;
       }
+
    square.x = pos.x - 1;
    square.y = pos.y - 1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if (board[square.x][square.y]/8 != color && checkCheck(square,pos) == 0)
+      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king3"<<std::endl;
          std::cout<<square<<std::endl;
          return 0;
       }
+
    square.x = pos.x + 1;
    square.y = pos.y;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if (board[square.x][square.y]/8 != color && checkCheck(square,pos) == 0)
+      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square<<std::endl;
@@ -712,7 +773,7 @@ bool t_chessCli::checkCheckmate()
    square.y = pos.y;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if (board[square.x][square.y]/8 != color && checkCheck(square,pos) == 0)
+      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square<<std::endl;
@@ -723,7 +784,7 @@ bool t_chessCli::checkCheckmate()
    square.y = pos.y +1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if (board[square.x][square.y]/8 != color && checkCheck(square,pos) == 0)
+      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square - pos<<std::endl;
@@ -734,7 +795,7 @@ bool t_chessCli::checkCheckmate()
    square.y = pos.y -1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if (board[square.x][square.y]/8 != color && checkCheck(square,pos) == 0)
+      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square - pos<<std::endl;
@@ -745,12 +806,13 @@ bool t_chessCli::checkCheckmate()
    square.y = pos.y + 1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if (board[square.x][square.y]/8 != color && checkCheck(square,pos) == 0)
+      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king2"<<std::endl;
          std::cout<<square - pos<<std::endl;
          return 0;
       }
+
    return 1;
 }
 

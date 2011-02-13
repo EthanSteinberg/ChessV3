@@ -44,7 +44,7 @@
       </Window>
 
       <Window Type="TaharezLook/Button" Name="Lols6">
-         <Property Name="Text" Value="Create Game" />
+         <Property Name="Text" Value="Disconnect" />
          <Property Name="UnifiedPosition" Value="{ {.65, 0}, {.85, 0} }" />
          <Property Name="UnifiedSize" Value="{ {.30, 0}, {.1, 0} }" />
       </Window>
