@@ -73,7 +73,7 @@ struct t_playRequest
 
 struct t_gamePass
 {
-   t_sharedGame *sharedGame;
+   boost::shared_ptr<t_sharedGame> *sharedGame;
 };
 
 struct t_message

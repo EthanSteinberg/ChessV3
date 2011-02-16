@@ -22,7 +22,7 @@ void createCli(boost::shared_ptr<t_sharedGame> sharedGame)
 
 using namespace boost::asio::ip;
 
-t_chessConnection::t_chessConnection(boost::shared_ptr<t_connectionData> theSharedData, const boost::shared_ptr<tcp::socket> &theSocket, tcp::endpoint theEnd) : connectionData(theSharedData), socket(theSocket), end(theEnd), playing(0)
+t_chessConnection::t_chessConnection(boost::shared_ptr<t_connectionData> theSharedData, const boost::shared_ptr<tcp::socket> &theSocket, tcp::endpoint theEnd) : connectionData(theSharedData), socket(theSocket), end(theEnd), color(0), playing(0)
 {
    std::cout<<"Connection made !!"<<std::endl;
 }
@@ -120,6 +120,7 @@ void t_chessConnection::run()
             }
 
 
+            color = 1;
             playing = 1;
 
             sharedGame = boost::make_shared<t_sharedGame>(tempConnData,connectionData);
@@ -128,7 +129,7 @@ void t_chessConnection::run()
 
             t_message newMessage;
             newMessage.id = PASS_GAME;
-            newMessage.gamePass.sharedGame = sharedGame.get();
+            newMessage.gamePass.sharedGame = &sharedGame;
 
             {
                boost::unique_lock<boost::mutex> lock(tempConnData->connMutex);
@@ -141,7 +142,9 @@ void t_chessConnection::run()
 
          case PASS_GAME:
          {
-            sharedGame = boost::shared_ptr<t_sharedGame>(message.gamePass.sharedGame);
+            color = 0;
+            playing = 1;
+            sharedGame = *message.gamePass.sharedGame;
             break;
          }
 
@@ -313,7 +316,7 @@ void t_chessConnection::run()
             newMessage.id = BOARD_CLICKED;
             newMessage.boardClicked.pos = netMessage.netBoardClicked.pos;
 
-            sharedGame->pushToGame(newMessage,playing);
+            sharedGame->pushToGame(newMessage,color);
             break;
          }
 

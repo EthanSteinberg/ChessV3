@@ -27,6 +27,7 @@ private:
    boost::shared_ptr<boost::asio::ip::tcp::socket> socket;
    boost::asio::ip::tcp::endpoint end;
 
+   bool color;
    bool playing;
 
    boost::shared_ptr<t_connectionData> partner;

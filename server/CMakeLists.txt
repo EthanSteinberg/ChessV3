@@ -1,14 +1,15 @@
-#CMakeLists file for server
+#CMakeLists file for client
 
 set(HDRS 
       )
  
 set(SRCS
-      src/main.cpp
+      main.cpp
 )
 
 
 add_executable(ChessServer ${HDRS} ${SRCS})
 target_link_libraries(ChessServer ChessNetwork ChessCli2 ${Boost_LIBRARIES})
 
-add_subdirectory(src)
+add_subdirectory(cli)
+add_subdirectory(network)
