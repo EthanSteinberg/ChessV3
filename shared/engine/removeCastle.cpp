@@ -4,10 +4,10 @@
 
 #include <cstdio>
 
-#include "chessCli.h"
+#include "chessEngine.h"
 #include "messages.h"
 
-void t_chessCli::removeCastle(const t_myVector2 &newPos, const t_myVector2 &pos)
+void t_chessEngine::removeCastle(const t_myVector2 &newPos, const t_myVector2 &pos)
 {
    int piece = board[pos.y][pos.x];
    int color = piece/8;

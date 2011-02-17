@@ -11,13 +11,13 @@
 
 #include <boost/thread.hpp>
 
-#include "../cli/chessCli.h"
+#include "../game/chessGame.h"
 
-void createCli(boost::shared_ptr<t_sharedGame> sharedGame)
+void createGame(boost::shared_ptr<t_sharedGame> sharedGame)
 {
-   t_chessCli chessCli(*sharedGame);
+   t_chessGame chessGame(*sharedGame);
 
-   chessCli.run();
+   chessGame.run();
 }
 
 using namespace boost::asio::ip;
@@ -125,7 +125,7 @@ void t_chessConnection::run()
 
             sharedGame = boost::make_shared<t_sharedGame>(tempConnData,connectionData);
 
-            boost::thread gameThread(boost::bind(createCli,sharedGame));
+            boost::thread gameThread(boost::bind(createGame,sharedGame));
 
             t_message newMessage;
             newMessage.id = PASS_GAME;

@@ -1,22 +1,29 @@
 #include <iostream>
 
 #include <boost/thread.hpp>
+#include <boost/foreach.hpp>
 
 #include <cstdio>
 #include <cstdlib>
 
-#include "chessCli.h"
+#include "chessGame.h"
 #include "messages.h"
 
-bool t_chessCli::processMessageServer(const t_message &message)
+bool t_chessGame::processMessageServer(const t_message &message)
 {
    switch (message.id)
    {
 
    case BOARD_CLICKED:
    {
-      std::cout<<"The cli knows the board has been clicked"<<std::endl;
-      boardClickedServer(message);
+      std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
+
+
+         BOOST_FOREACH(t_message &newMessage, messageBuffer)
+         {
+            sharedGame.pushToBoth(newMessage);
+         }
+
       break;
    }
 

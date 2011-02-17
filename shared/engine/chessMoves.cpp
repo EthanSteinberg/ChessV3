@@ -5,10 +5,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "chessCli.h"
+#include "chessEngine.h"
 #include "messages.h"
 
-void t_chessCli::moveMove(t_myVector2 pos)
+void t_chessEngine::moveMove(t_myVector2 pos, std::vector<t_message> &buffer)
 {
    t_message newMessage;
    newMessage.id = HIGHLIGHT_SPACE;
@@ -39,14 +39,14 @@ void t_chessCli::moveMove(t_myVector2 pos)
 
    {
 
-      sharedGame.pushToOne(newMessage,turn);
+      buffer.push_back(newMessage);
 
       for (auto iter = move.begin(); iter != move.end(); iter++)
       {
          newMessage.highlightSpace.pos = *iter;
          newMessage.highlightSpace.color = 0;
 
-      sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
       }
 
       for (auto iter = hit.begin(); iter != hit.end(); iter++)
@@ -54,7 +54,7 @@ void t_chessCli::moveMove(t_myVector2 pos)
          newMessage.highlightSpace.pos = *iter;
          newMessage.highlightSpace.color = 0;
 
-      sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
       }
 
       for (auto iter = castle.begin(); iter != castle.end(); iter++)
@@ -62,14 +62,14 @@ void t_chessCli::moveMove(t_myVector2 pos)
          newMessage.highlightSpace.pos = *iter;
          newMessage.highlightSpace.color = 0;
 
-      sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
       }
 
       newMessage.id = MOVE_PIECE;
       newMessage.movePiece.pos = pos;
       newMessage.movePiece.oldPos = selectedPos;
 
-   sharedGame.pushToBoth(newMessage);
+      buffer.push_back(newMessage);
    }
 
    move.clear();
@@ -89,7 +89,7 @@ void t_chessCli::moveMove(t_myVector2 pos)
 }
 
 
-void t_chessCli::attackMove(t_myVector2 pos)
+void t_chessEngine::attackMove(t_myVector2 pos, std::vector<t_message> &buffer)
 {
    t_message newMessage;
    newMessage.id = HIGHLIGHT_SPACE;
@@ -124,14 +124,14 @@ void t_chessCli::attackMove(t_myVector2 pos)
 
    {
 
-      sharedGame.pushToOne(newMessage,turn);
+      buffer.push_back(newMessage);
 
       for (auto iter = move.begin(); iter != move.end(); iter++)
       {
          newMessage.highlightSpace.pos = *iter;
          newMessage.highlightSpace.color = 0;
 
-      sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
       }
 
       for (auto iter = hit.begin(); iter != hit.end(); iter++)
@@ -139,7 +139,7 @@ void t_chessCli::attackMove(t_myVector2 pos)
          newMessage.highlightSpace.pos = *iter;
          newMessage.highlightSpace.color = 0;
 
-      sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
       }
 
       for (auto iter = castle.begin(); iter != castle.end(); iter++)
@@ -147,14 +147,14 @@ void t_chessCli::attackMove(t_myVector2 pos)
          newMessage.highlightSpace.pos = *iter;
          newMessage.highlightSpace.color = 0;
 
-      sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
       }
 
       newMessage.id = CAPTURE_PIECE;
       newMessage.movePiece.pos = pos;
       newMessage.movePiece.oldPos = selectedPos;
 
-   sharedGame.pushToBoth(newMessage);
+      buffer.push_back(newMessage);
    }
 
    move.clear();
@@ -171,7 +171,7 @@ void t_chessCli::attackMove(t_myVector2 pos)
       std::cout<<"I win"<<std::endl;
    }
 }
-void t_chessCli::castleMove(t_myVector2 pos)
+void t_chessEngine::castleMove(t_myVector2 pos, std::vector<t_message> &buffer)
 {
    t_message newMessage;
    newMessage.id = HIGHLIGHT_SPACE;
@@ -202,14 +202,14 @@ void t_chessCli::castleMove(t_myVector2 pos)
 
    {
 
-      sharedGame.pushToOne(newMessage,turn);
+      buffer.push_back(newMessage);
 
       for (auto iter = move.begin(); iter != move.end(); iter++)
       {
          newMessage.highlightSpace.pos = *iter;
          newMessage.highlightSpace.color = 0;
 
-      sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
       }
 
       for (auto iter = hit.begin(); iter != hit.end(); iter++)
@@ -217,7 +217,7 @@ void t_chessCli::castleMove(t_myVector2 pos)
          newMessage.highlightSpace.pos = *iter;
          newMessage.highlightSpace.color = 0;
 
-      sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
       }
 
       for (auto iter = castle.begin(); iter != castle.end(); iter++)
@@ -225,14 +225,14 @@ void t_chessCli::castleMove(t_myVector2 pos)
          newMessage.highlightSpace.pos = *iter;
          newMessage.highlightSpace.color = 0;
 
-      sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
       }
 
       newMessage.id = MOVE_PIECE;
       newMessage.movePiece.pos = pos;
       newMessage.movePiece.oldPos = selectedPos;
 
-   sharedGame.pushToBoth(newMessage);
+      buffer.push_back(newMessage);
 
       if (pos.x == 2) //left castle
       {
@@ -246,7 +246,7 @@ void t_chessCli::castleMove(t_myVector2 pos)
          newMessage.movePiece.oldPos.x = 7;
       }
 
-   sharedGame.pushToBoth(newMessage);
+      buffer.push_back(newMessage);
    }
 
    move.clear();

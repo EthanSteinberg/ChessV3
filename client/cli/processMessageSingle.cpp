@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <boost/thread.hpp>
+#include <boost/foreach.hpp>
 
 #include <cstdio>
 #include <cstdlib>
@@ -15,7 +16,18 @@ bool t_chessCli::processMessageSingle(const t_message &message)
 
    case BOARD_CLICKED:
    {
-      boardClickedSingle(message);
+      std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
+
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+         BOOST_FOREACH(t_message &newMessage, messageBuffer)
+         {
+            sharedData.clientBuffer.push_front(newMessage);
+         }
+         sharedData.clientCondition.notify_one();
+      }
+
       break;
    }
 

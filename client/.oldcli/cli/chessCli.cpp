@@ -8,7 +8,7 @@
 #include "chessCli.h"
 #include "messages.h"
 
-t_chessCli::t_chessCli(t_sharedGame &theSharedGame) : sharedGame(theSharedGame), selected(0)
+t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData), selected(0), connected(0)
 {
    std::cout<<"Hello world"<<std::endl;
 
@@ -71,15 +71,15 @@ void t_chessCli::run()
       t_message message;
 
       {
-         boost::unique_lock<boost::mutex> lock(sharedGame.gameMutex);
+         boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
 
-         if (sharedGame.gameBuffer.empty())
+         if (sharedData.gameBuffer.empty())
          {
-            sharedGame.gameCondition.wait(lock);
+            sharedData.gameCondition.wait(lock);
          }
 
-         message = sharedGame.gameBuffer.back();
-         sharedGame.gameBuffer.pop_back();
+         message = sharedData.gameBuffer.back();
+         sharedData.gameBuffer.pop_back();
 
       }
 
@@ -87,7 +87,11 @@ void t_chessCli::run()
       
       int quit;
       
-      quit = processMessageServer(message);
+      if (!connected)
+         quit = processMessageSingle(message);
+
+      else
+         quit = processMessageConnected(message);
 
       if (quit)
          return;

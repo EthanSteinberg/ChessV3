@@ -5,16 +5,12 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "chessCli.h"
+#include "chessEngine.h"
 #include "messages.h"
 
-void t_chessCli::boardClickedServer(const t_message &message)
+std::vector<t_message> t_chessEngine::boardClickedSingle(const t_message &message)
 {
-   if (message.boardClicked.turn != turn)
-   {
-      std::cout<<"Wrong turn stupid"<<std::endl;
-      return;
-   }
+   std::vector<t_message> buffer;
 
    t_myVector2 pos = message.boardClicked.pos;
    std::cout<<"It was clicked at "<<pos<<std::endl;
@@ -30,31 +26,33 @@ void t_chessCli::boardClickedServer(const t_message &message)
          selected = 0;
          newMessage.highlightSpace.pos = selectedPos;
          newMessage.highlightSpace.color = 0;
-
-         sharedGame.pushToOne(newMessage,turn);
-
-         for (auto iter = move.begin(); iter != move.end(); iter++)
          {
-            newMessage.highlightSpace.pos = *iter;
-            newMessage.highlightSpace.color = 0;
 
-            sharedGame.pushToOne(newMessage,turn);
-         }
+            buffer.push_back(newMessage);
 
-         for (auto iter = hit.begin(); iter != hit.end(); iter++)
-         {
-            newMessage.highlightSpace.pos = *iter;
-            newMessage.highlightSpace.color = 0;
+            for (auto iter = move.begin(); iter != move.end(); iter++)
+            {
+               newMessage.highlightSpace.pos = *iter;
+               newMessage.highlightSpace.color = 0;
 
-            sharedGame.pushToOne(newMessage,turn);
-         }
+               buffer.push_back(newMessage);
+            }
 
-         for (auto iter = castle.begin(); iter != castle.end(); iter++)
-         {
-            newMessage.highlightSpace.pos = *iter;
-            newMessage.highlightSpace.color = 0;
+            for (auto iter = hit.begin(); iter != hit.end(); iter++)
+            {
+               newMessage.highlightSpace.pos = *iter;
+               newMessage.highlightSpace.color = 0;
 
-            sharedGame.pushToOne(newMessage,turn);
+               buffer.push_back(newMessage);
+            }
+
+            for (auto iter = castle.begin(); iter != castle.end(); iter++)
+            {
+               newMessage.highlightSpace.pos = *iter;
+               newMessage.highlightSpace.color = 0;
+
+               buffer.push_back(newMessage);
+            }
          }
 
          move.clear();
@@ -64,17 +62,17 @@ void t_chessCli::boardClickedServer(const t_message &message)
 
       else if (std::find(move.begin(), move.end(), pos) != move.end())
       {
-         moveMove(pos);
+         moveMove(pos,buffer);
       }
 
       else if (std::find(hit.begin(), hit.end(), pos) != hit.end())
       {
-         attackMove(pos);
+         attackMove(pos,buffer);
       }
 
       else if (std::find(castle.begin(), castle.end(), pos) != castle.end())
       {
-         castleMove(pos);
+         castleMove(pos,buffer);
       }
    }
 
@@ -88,15 +86,14 @@ void t_chessCli::boardClickedServer(const t_message &message)
       generateMoves(pos);
 
       {
-
-         sharedGame.pushToOne(newMessage,turn);
+         buffer.push_back(newMessage);
 
          for (auto iter = move.begin(); iter != move.end(); iter++)
          {
             newMessage.highlightSpace.pos = *iter;
             newMessage.highlightSpace.color = 2;
 
-            sharedGame.pushToOne(newMessage,turn);
+            buffer.push_back(newMessage);
          }
 
          for (auto iter = hit.begin(); iter != hit.end(); iter++)
@@ -104,7 +101,7 @@ void t_chessCli::boardClickedServer(const t_message &message)
             newMessage.highlightSpace.pos = *iter;
             newMessage.highlightSpace.color = 3;
 
-            sharedGame.pushToOne(newMessage,turn);
+            buffer.push_back(newMessage);
          }
 
          for (auto iter = castle.begin(); iter != castle.end(); iter++)
@@ -112,11 +109,13 @@ void t_chessCli::boardClickedServer(const t_message &message)
             newMessage.highlightSpace.pos = *iter;
             newMessage.highlightSpace.color = 4;
 
-            sharedGame.pushToOne(newMessage,turn);
+            buffer.push_back(newMessage);
          }
 
       }
 
 
    }
+
+   return buffer;
 }

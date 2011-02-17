@@ -15,7 +15,7 @@ bool t_chessCli::processMessageSingle(const t_message &message)
 
    case BOARD_CLICKED:
    {
-      boardClickedSingle(message);
+      chessEngine.boardClickedSingle(message);
       break;
    }
 

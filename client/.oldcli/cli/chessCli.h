@@ -9,14 +9,16 @@
 
 #include "myvector2.h"
 
+#include "engine/chessEngine.h"
 
-class t_sharedGame;
+
+class t_sharedData;
 class t_message;
 
 class t_chessCli : boost::noncopyable
 {
 public:
-   t_chessCli(t_sharedGame &theSharedGame);
+   t_chessCli(t_sharedData &theSharedData);
 
    void run();
 
@@ -37,8 +39,6 @@ private:
    bool processMessageConnected(const t_message &message);
    void boardClickedSingle(const t_message &message);
 
-   bool processMessageServer(const t_message &message);
-   void boardClickedServer(const t_message &message);
 
    void castleMove(t_myVector2 pos);
    void attackMove( t_myVector2 pos);
@@ -48,7 +48,7 @@ private:
    std::vector<t_myVector2> hit;
    std::vector<t_myVector2> castle;
 
-   t_sharedGame &sharedGame;
+   t_sharedData &sharedData;
 
    char board[8][8];
 
@@ -68,6 +68,10 @@ private:
 
    std::set<t_myVector2> whitePieces;
    std::set<t_myVector2> blackPieces;
+
+   bool connected;
+
+   t_chessEngine chessEngine;
 };
 
 #endif

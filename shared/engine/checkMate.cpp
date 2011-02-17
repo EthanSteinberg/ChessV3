@@ -5,7 +5,7 @@
 
 #include <cstdio>
 
-#include "chessCli.h"
+#include "chessEngine.h"
 #include "messages.h"
 
 void printBit(const std::bitset<64> &set)
@@ -21,7 +21,7 @@ void printBit(const std::bitset<64> &set)
    }
 }
 
-bool t_chessCli::checkCheckmate()
+bool t_chessEngine::checkCheckmate()
 {
    int color = turn;
 

@@ -4,10 +4,10 @@
 
 #include <cstdio>
 
-#include "chessCli.h"
+#include "chessEngine.h"
 #include "messages.h"
 
-bool t_chessCli::checkCheck(const t_myVector2 &posTo, const t_myVector2 &oldPos)
+bool t_chessEngine::checkCheck(const t_myVector2 &posTo, const t_myVector2 &oldPos)
 {
    int temp = board[posTo.y][posTo.x];
    board[posTo.y][posTo.x] = board[oldPos.y][oldPos.x];

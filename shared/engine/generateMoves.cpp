@@ -1,19 +1,19 @@
 #include <iostream>
-#include <bitset>
 
 #include <boost/thread.hpp>
 
 #include <cstdio>
 
-#include "chessCli.h"
+#include "chessEngine.h"
 #include "messages.h"
 
-
-void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSquares)
+void t_chessEngine::generateMoves(const t_myVector2 &pos)
 {
    int piece = board[pos.y][pos.x];
    int color = piece/8;
    int type = piece%8;
+
+   printf("\nPiece: %d Color: %d Type: %d\n",piece,color,type);
 
    t_myVector2 square;
 
@@ -29,7 +29,7 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
             if (board[square.y][square.x] == 0)
             {
-            movingSquares[square.y * 8 + square.x] = 1;
+               move.push_back(square);
             }
          }
       }
@@ -42,7 +42,7 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
       }
 
@@ -54,7 +54,7 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x]/8 != color && board[square.y][square.x] != 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -65,7 +65,7 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
       {
          if (board[square.y][square.x]/8 != color && board[square.y][square.x] != 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
    }
@@ -79,12 +79,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
       {
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
             break;
          }
 
@@ -103,12 +103,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
       {
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
             break;
          }
 
@@ -127,12 +127,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
       {
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
             break;
          }
 
@@ -151,12 +151,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
       {
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
             break;
          }
 
@@ -180,12 +180,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -197,12 +197,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -214,12 +214,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -231,12 +231,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -248,12 +248,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -265,12 +265,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -282,12 +282,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -299,12 +299,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
    }
@@ -318,12 +318,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
       {
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
             break;
          }
 
@@ -343,12 +343,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
       {
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
             break;
          }
 
@@ -368,12 +368,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
       {
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
             break;
          }
 
@@ -393,12 +393,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
       {
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
             break;
          }
 
@@ -469,12 +469,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -486,12 +486,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -503,12 +503,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -520,12 +520,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -537,12 +537,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -554,12 +554,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -571,12 +571,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
 
@@ -588,12 +588,12 @@ void t_chessCli::addPieceMoves(const t_myVector2 &pos, std::bitset<64> &movingSq
 
          if (board[square.y][square.x] == 0)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            move.push_back(square);
          }
 
          else if (board[square.y][square.x]/8 != color)
          {
-            movingSquares[square.y * 8 + square.x] = 1;
+            hit.push_back(square);
          }
       }
    }
