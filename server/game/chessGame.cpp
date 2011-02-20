@@ -9,7 +9,10 @@
 #include "messages.h"
 
 t_chessGame::t_chessGame(t_sharedGame &theSharedGame) : sharedGame(theSharedGame)
-{}
+{
+   chessEngine.reset();
+}
+
 
 void t_chessGame::run()
 {

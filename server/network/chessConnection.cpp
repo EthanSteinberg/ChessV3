@@ -104,7 +104,7 @@ void t_chessConnection::run()
 
                   if (myDataTemp.second->name == std::string(message.playResponse.name))
                   {
-                     tempConnData = myDataTemp.second->connectionData;
+                     tempConnData = myDataTemp.second->connectionData.lock();
                      found = 1;
                      break;
                   }
@@ -340,7 +340,7 @@ void t_chessConnection::run()
 
                   if (myDataTemp.second->name == std::string(netMessage.netWantToPlayWith.name))
                   {
-                     tempConnData = myDataTemp.second->connectionData;
+                     tempConnData = myDataTemp.second->connectionData.lock();
                      found = 1;
                      break;
                   }
@@ -388,7 +388,7 @@ void t_chessConnection::run()
 
                   if (myDataTemp.second->name == std::string(netMessage.netPlayResponse.name))
                   {
-                     tempConnData = myDataTemp.second->connectionData;
+                     tempConnData = myDataTemp.second->connectionData.lock();
                      found = 1;
                      break;
                   }

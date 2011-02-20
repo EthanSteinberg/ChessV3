@@ -16,8 +16,9 @@ bool t_chessGame::processMessageServer(const t_message &message)
 
    case BOARD_CLICKED:
    {
-      std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
+      printf("The turn was %d\n",message.boardClicked.turn);
 
+      std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
 
          BOOST_FOREACH(t_message &newMessage, messageBuffer)
          {

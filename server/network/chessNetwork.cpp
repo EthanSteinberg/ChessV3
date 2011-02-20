@@ -1,6 +1,5 @@
 #include "chessNetwork.h"
 #include "chessConnection.h"
-#include "../cli/chessCli.h"
 
 #include "messages.h"
 

@@ -6,6 +6,7 @@
 #include <boost/asio.hpp>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 #include "messages.h"
 
@@ -19,7 +20,7 @@ struct t_myData
    int losses;
    int status;
 
-   boost::shared_ptr<t_connectionData> connectionData;
+   boost::weak_ptr<t_connectionData> connectionData;
 };
 
 typedef std::map<boost::asio::ip::tcp::endpoint, boost::shared_ptr<t_myData> > t_myDataBase;
