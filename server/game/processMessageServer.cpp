@@ -18,6 +18,9 @@ bool t_chessGame::processMessageServer(const t_message &message)
    {
       printf("The turn was %d\n",message.boardClicked.turn);
 
+      if (message.boardClicked.turn != chessEngine.getTurn())
+         break;
+
       std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
 
          BOOST_FOREACH(t_message &newMessage, messageBuffer)

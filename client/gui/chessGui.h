@@ -1,14 +1,34 @@
 #ifndef CHESS_GUI_H_INCLUDED
 #define CHESS_GUI_H_INCLUDED
 
+#include <SFML/Graphics.hpp>
+#include <gtkmm.h>
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <map>
 #include <string>
 
-#include "chessCegui.h"
 #include "messages.h"
+
+class ModelColumns : public Gtk::TreeModelColumnRecord
+{
+public:
+
+   ModelColumns()
+   {
+      add(m_Name);
+      add(m_Status);
+      add(m_Wins);
+      add(m_Losses);
+   }
+
+   Gtk::TreeModelColumn<Glib::ustring> m_Name;
+   Gtk::TreeModelColumn<int> m_Status;
+   Gtk::TreeModelColumn<int> m_Wins;
+   Gtk::TreeModelColumn<int> m_Losses;
+
+};
 
 class t_sharedData;
 
@@ -20,25 +40,20 @@ public:
    void run();
 
 private:
-   void processEvents();
-   void drawBoard();
+   void initGtkmm();
+   void initSfml();
+   void reset();
 
    void loadImages();
    void loadSprites();
 
-   void initMessage();
-   void initRequest();
-   void initServer();
-   void initConnect();
-   void initCegui();
-
-   void checkBuffer();
+   bool checkBuffer();
 
    void refreshServer(t_message message);
    void showMessage(std::string message);
    void showRequest(std::string message);
-
-   t_chessCegui chessCegui;
+   void resetWarningConnected();
+   void resetWarningSingle();
 
    sf::RenderWindow App;
 
@@ -53,9 +68,20 @@ private:
    sf::Shape PurpleBox;
    sf::Shape PinkBox;
 
-   CEGUI::Window *myRoot;
-   CEGUI::System *mySystem;
-   CEGUI::WindowManager *wmgr;
+   Glib::RefPtr<Gtk::Builder> builder;
+   Glib::RefPtr<Gtk::ListStore> list;
+   ModelColumns columns;
+
+   boost::scoped_ptr<Gtk::Window> mainWindow;
+   boost::scoped_ptr<Gtk::Window> serverWindow;
+   boost::scoped_ptr<Gtk::Dialog> connectDialog;
+
+   Gtk::DrawingArea *myArea;
+   Gtk::Entry *nameEntry;
+   Gtk::Entry *serverEntry;
+   Gtk::Label *label;
+   Gtk::TreeView *view;
+   
 
    t_sharedData &sharedData;
 
@@ -68,16 +94,24 @@ private:
 
    int newWidth;
    int newHeight;
-};
 
-class MyListItem : public CEGUI::ListboxTextItem
-{
-public:
-   MyListItem(const CEGUI::String &text) : ListboxTextItem(text)
-   {
-      setSelectionBrushImage("TaharezLook", "MultiListSelectionBrush");
-   }
-};
+   bool showingCheck;
+   t_myVector2 checkPos;
 
+   //Gui Callbacks
+   void newButton();
+   bool drawBoard(GdkEventExpose *event);
+   bool mouseButtonPressedEvent(GdkEventButton* event);
+   void sizeAllocated(Gtk::Allocation &);
+   void disconnectFromServer();
+   void selectedPlay();
+   void realizeFunc();
+
+   void openServer();
+   void openConnect();
+   void refreshConnect();
+   void connectToServer();
+
+};
 
 #endif

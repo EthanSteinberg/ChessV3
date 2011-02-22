@@ -26,9 +26,8 @@ include_directories(${Boost_INCLUDE_DIR})
 find_package(SFML REQUIRED)
 include_directories(${SFML_INCLUDE_DIR})
 
-set(CEGUI_DIR lib/CEGUI-.0.7.5)
-find_package(CEGUI REQUIRED)
-include_directories(${CEGUI_INCLUDE_DIR})
+find_package(GTK2 REQUIRED gtk gtkmm) 
+include_directories(${GTK2_INCLUDE_DIRS} /usr/include/freetype2)
 
 include_directories(shared)
 

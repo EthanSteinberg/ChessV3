@@ -334,6 +334,42 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
          break;
          }
 
+         case NET_CHECK_MATE:
+         {
+            std::cout<<"net check mate"<<std::endl;
+
+            t_message message;
+            message.id = CHECK_MATE;
+            message.checkMate.winner = netMessage.netCheckMate.winner;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+
+            sharedData.gameCondition.notify_one();
+         break;
+         }
+
+         case NET_IN_CHECK:
+         {
+            std::cout<<"net in check"<<std::endl;
+
+            t_message message;
+            message.id = IN_CHECK;
+            message.inCheck.attackingPiece = netMessage.netInCheck.attackingPiece;;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+
+            sharedData.gameCondition.notify_one();
+         break;
+         }
+
          case NET_CONNECTION_BAD_NAME:
          {
             std::cout<<"Connection bad name"<<std::endl;

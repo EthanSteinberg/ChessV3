@@ -122,6 +122,40 @@ bool t_chessCli::processMessageSingle(const t_message &message)
       break;
    }
 
+   case WANT_TO_RESET_BOARD:
+   {
+      std::cout<<"Gui wants to reset the board"<<std::endl;
+
+      t_message newMessage;
+      newMessage.id = RESET_WARNING_SINGLE;
+
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+         sharedData.clientBuffer.push_front(newMessage);
+         sharedData.clientCondition.notify_one();
+      }
+      break;
+   }
+
+   case RESET_PAST_WARNING:
+   {
+      std::cout<<"Gui wants to reset past the warning"<<std::endl;
+
+      t_message newMessage;
+      newMessage.id = RESET_GUI;
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+
+         sharedData.clientBuffer.push_front(newMessage);
+         sharedData.clientCondition.notify_one();
+      }
+
+      chessEngine.reset();
+
+      break;
+   }
+
    case QUIT_MESSAGE:
    {
       std::cout<<"Cli told to quit"<<std::endl;

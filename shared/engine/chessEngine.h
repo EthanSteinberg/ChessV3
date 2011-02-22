@@ -8,7 +8,7 @@
 #include <set>
 #include <bitset>
 
-#include <boost/utility.hpp>
+#include <boost/optional.hpp>
 
 class t_message;
 
@@ -18,13 +18,14 @@ public:
    t_chessEngine();
 
    void reset();
+   bool getTurn();
    std::vector<t_message> boardClickedSingle(const t_message &message);
 
 private:
    void generateMoves(const t_myVector2 &pos);
    void removeCastle(const t_myVector2 &pos, const t_myVector2 &oldPos);
 
-   bool checkCheck(const t_myVector2 &pos, const t_myVector2 &oldPos);
+   boost::optional<t_myVector2> checkCheck(const t_myVector2 &pos, const t_myVector2 &oldPos);
    bool checkCheckmate();
 
    void addPieceMoves(const t_myVector2 &pos, std::bitset<64> &defendingPieces);

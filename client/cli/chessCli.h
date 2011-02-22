@@ -33,6 +33,7 @@ private:
    t_sharedData &sharedData;
 
    bool connected;
+   bool playing;
 
    t_chessEngine chessEngine;
 };

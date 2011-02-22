@@ -29,7 +29,8 @@ private:
 
    bool color;
    bool playing;
-
+  
+   boost::shared_ptr<t_myData> myData;
    boost::shared_ptr<t_connectionData> partner;
    boost::shared_ptr<t_sharedGame> sharedGame;
    

@@ -190,6 +190,30 @@ void t_chessConnection::run()
             break;
          }
 
+         case CHECK_MATE:
+         {
+            std::cout<<"Check Mate"<<std::endl;
+
+            t_netMessage newNetMessage;
+            newNetMessage.id = NET_CHECK_MATE;
+            newNetMessage.netCheckMate.winner = message.checkMate.winner;
+
+            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            break;
+         }
+
+         case IN_CHECK:
+         {
+            std::cout<<"In check"<<std::endl;
+
+            t_netMessage newNetMessage;
+            newNetMessage.id = NET_IN_CHECK;
+            newNetMessage.netInCheck.attackingPiece = message.inCheck.attackingPiece;;
+
+            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            break;
+         }
+
          case QUIT_MESSAGE:
             std::cout<<"It told me to quit"<<std::endl;
             return;
@@ -258,7 +282,7 @@ void t_chessConnection::run()
             }
 
 
-            boost::shared_ptr<t_myData> myData = boost::make_shared<t_myData>();
+            myData = boost::make_shared<t_myData>();
 
             myData->name = netMessage.netJoinServer.name;
             myData->wins = 0;

@@ -729,7 +729,7 @@ bool t_chessEngine::checkCheckmate()
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
 
-      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
+      if ((board[square.y][square.x]/8 != color || board[square.y][square.x] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square<<std::endl;
@@ -740,7 +740,7 @@ bool t_chessEngine::checkCheckmate()
    square.y = pos.y - 1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
+      if ((board[square.y][square.x]/8 != color || board[square.y][square.x] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square<<std::endl;
@@ -751,7 +751,7 @@ bool t_chessEngine::checkCheckmate()
    square.y = pos.y - 1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
+      if ((board[square.y][square.x]/8 != color || board[square.y][square.x] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king3"<<std::endl;
          std::cout<<square<<std::endl;
@@ -762,7 +762,7 @@ bool t_chessEngine::checkCheckmate()
    square.y = pos.y;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
+      if ((board[square.y][square.x]/8 != color || board[square.y][square.x] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square<<std::endl;
@@ -773,7 +773,7 @@ bool t_chessEngine::checkCheckmate()
    square.y = pos.y;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
+      if ((board[square.y][square.x]/8 != color || board[square.y][square.x] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square<<std::endl;
@@ -784,7 +784,7 @@ bool t_chessEngine::checkCheckmate()
    square.y = pos.y +1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
+      if ((board[square.y][square.x]/8 != color || board[square.y][square.x] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square - pos<<std::endl;
@@ -795,7 +795,7 @@ bool t_chessEngine::checkCheckmate()
    square.y = pos.y -1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
+      if ((board[square.y][square.x]/8 != color || board[square.y][square.x] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king"<<std::endl;
          std::cout<<square - pos<<std::endl;
@@ -806,7 +806,7 @@ bool t_chessEngine::checkCheckmate()
    square.y = pos.y + 1;
 
    if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      if ((board[square.x][square.y]/8 != color || board[square.x][square.y] == 0) && checkCheck(square,pos) == 0)
+      if ((board[square.y][square.x]/8 != color || board[square.y][square.x] == 0) && checkCheck(square,pos) == 0)
       {
          std::cout<<"I can move the king2"<<std::endl;
          std::cout<<square - pos<<std::endl;

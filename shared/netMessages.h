@@ -9,7 +9,17 @@
 #include <cstdint>
 
 enum {NET_BOARD_CLICKED = 100, NET_HIGHLIGHT_SPACE, NET_MOVE_PIECE, NET_CAPTURE_PIECE, NET_JOIN_SERVER, NET_QUIT_MESSAGE, NET_REFRESH_CONNECTION, NET_CONNECTION_SUCCESS, NET_CONNECTION_BAD_NAME, NET_DISCONNECT, 
-   NET_WANT_TO_PLAY_WITH, NET_PLAY_REQUEST, NET_PLAY_RESPONSE, NET_PLAY_ACCEPTED, NET_PLAY_REJECTED};
+   NET_WANT_TO_PLAY_WITH, NET_PLAY_REQUEST, NET_PLAY_RESPONSE, NET_PLAY_ACCEPTED, NET_PLAY_REJECTED, NET_LEAVE_GAME, NET_CHECK_MATE, NET_IN_CHECK};
+
+struct t_netCheckMate
+{
+   uint8_t winner;
+};
+
+struct t_netInCheck
+{
+   t_myVector2 attackingPiece;
+};
 
 struct t_netBoardClicked
 {
@@ -68,6 +78,8 @@ struct t_netMessage
       t_netWantToPlayWith netWantToPlayWith;
       t_netPlayResponse netPlayResponse;
       t_netPlayRequest netPlayRequest;
+      t_netInCheck netInCheck;
+      t_netCheckMate netCheckMate;
    };
 
 };

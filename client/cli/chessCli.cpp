@@ -8,7 +8,7 @@
 #include "chessCli.h"
 #include "messages.h"
 
-t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData),  connected(0)
+t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData),  connected(0), playing(0)
 {
    chessEngine.reset();
 }
@@ -22,7 +22,7 @@ void t_chessCli::run()
       {
          boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
 
-         if (sharedData.gameBuffer.empty())
+         while (sharedData.gameBuffer.empty())
          {
             sharedData.gameCondition.wait(lock);
          }

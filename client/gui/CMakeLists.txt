@@ -1,13 +1,13 @@
 set(HDRS 
       chessGui.h
-      chessCegui.h
       )
  
 set(SRCS
-      chessCegui.cpp
       chessGui.cpp
       chessServer.cpp
+      chessGtkmm.cpp
+      chessSfml.cpp
 )
 
 add_library(ChessGui ${HDRS} ${SRCS})
-target_link_libraries(ChessGui ${SFML_LIBRARY} ${CEGUI_LIBRARY} CEGUIOpenGLRenderer.so ${Boost_LIBRARIES})
+target_link_libraries(ChessGui ${GTK2_LIBRARIES} ${SFML_LIBRARY} ${Boost_LIBRARIES})

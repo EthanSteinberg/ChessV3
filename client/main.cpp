@@ -10,6 +10,8 @@
 
 #include "messages.h"
 
+#include <gtkmm.h>
+
 using std::vector;
 using std::cout;
 using std::endl;
@@ -26,8 +28,10 @@ void createNet(t_sharedData &sharedData)
    net.run();
 }
 
-int main(int argv, char **argc)
+int main(int argc, char **argv)
 {
+   Gtk::Main kit(argc,argv);
+
    t_sharedData sharedData;
 
    try

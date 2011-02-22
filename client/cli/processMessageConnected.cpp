@@ -15,15 +15,56 @@ bool t_chessCli::processMessageConnected(const t_message &message)
 
    case BOARD_CLICKED:
    {
-      std::cout<<"Telling net I clicked"<<std::endl;
-
+      if (!playing)
       {
-         boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+         t_message newMessage;
+         newMessage.id = PRESSED_BOARD_NOT_PLAYING;
 
-         sharedData.netBuffer.push_front(message);
-         sharedData.netCondition.notify_one();
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            sharedData.netBuffer.push_front(newMessage);
+            sharedData.netCondition.notify_one();
+         }
       }
-      
+
+      else
+      {
+
+         std::cout<<"Telling net I clicked"<<std::endl;
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+
+            sharedData.netBuffer.push_front(message);
+            sharedData.netCondition.notify_one();
+         }
+      }
+
+      break;
+   }
+
+   case CHECK_MATE:
+   {
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+         sharedData.clientBuffer.push_front(message);
+         sharedData.clientCondition.notify_one();
+      }
+
+      break;
+   }
+
+   case IN_CHECK:
+   {
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+         sharedData.clientBuffer.push_front(message);
+         sharedData.clientCondition.notify_one();
+      }
+
       break;
    }
 
@@ -90,7 +131,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
          sharedData.netBuffer.push_front(message);
          sharedData.netCondition.notify_one();
       }
-      
+
       break;
    }
 
@@ -124,11 +165,17 @@ bool t_chessCli::processMessageConnected(const t_message &message)
 
    case PLAY_ACCEPTED:
    {
+      playing = 1;
       std::cout<<"play accepted"<<std::endl;
+
+      chessEngine.reset();
+      t_message newMessage;
+      newMessage.id = RESET_GUI;
 
       {
          boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
 
+         sharedData.clientBuffer.push_front(newMessage);
          sharedData.clientBuffer.push_front(message);
          sharedData.clientCondition.notify_one();
       }
@@ -138,6 +185,20 @@ bool t_chessCli::processMessageConnected(const t_message &message)
 
    case PLAY_RESPONSE:
    {
+      if (message.playResponse.response == 1)
+      {
+         playing = 1;
+         chessEngine.reset();
+         t_message newMessage;
+         newMessage.id = RESET_GUI;
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            sharedData.clientBuffer.push_front(newMessage);
+            sharedData.clientCondition.notify_one();
+         }
+      }
+
       std::cout<<"I have responded to their asking"<<std::endl;
 
       {
@@ -147,11 +208,24 @@ bool t_chessCli::processMessageConnected(const t_message &message)
          sharedData.netCondition.notify_one();
       }
 
+
       break;
    }
 
    case DISCONNECT_MESSAGE:
    {
+      if (playing)
+      {
+         t_message newMessage;
+         newMessage.id = RESET_GUI;
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            sharedData.clientBuffer.push_front(newMessage);
+            sharedData.clientCondition.notify_one();
+         }
+         playing = 0;
+      }
       {
          boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
 
@@ -210,6 +284,56 @@ bool t_chessCli::processMessageConnected(const t_message &message)
       }
       break;
    }
+
+   case WANT_TO_RESET_BOARD:
+   {
+      std::cout<<"Gui wants to reset the board"<<std::endl;
+
+      if (playing)
+      {
+         t_message newMessage;
+         newMessage.id = RESET_WARNING_CONNECTED;
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            sharedData.clientBuffer.push_front(newMessage);
+            sharedData.clientCondition.notify_one();
+         }
+
+      }
+
+      break;
+   }
+
+   case RESET_PAST_WARNING:
+   {
+      std::cout<<"Gui wants to reset past the warning"<<std::endl;
+
+      if (playing)
+      {
+         t_message newMessage;
+
+         newMessage.id = RESET_NET;
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+
+            sharedData.netBuffer.push_front(newMessage);
+            sharedData.netCondition.notify_one();
+         }
+
+         newMessage.id = RESET_GUI;
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            sharedData.clientBuffer.push_front(newMessage);
+            sharedData.clientCondition.notify_one();
+         }
+      }
+
+      break;
+   }
+
 
    case QUIT_MESSAGE:
    {

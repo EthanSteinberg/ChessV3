@@ -13,10 +13,21 @@
 struct t_connectionData;
 struct t_sharedGame;
 
-enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE, CAPTURE_PIECE, 
+enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE, CAPTURE_PIECE, IN_CHECK, CHECK_MATE, 
    JOIN_SERVER, REFRESH_CONNECTION, WANT_REFRESH_CONNECTION, CONNECTION_SUCCESS, CONNECTION_BAD_NAME, CONNECTION_NO_SERVER, CONNECTION_FAILED, DISCONNECT_MESSAGE, 
-   WANT_TO_PLAY_WITH, PLAY_REQUEST, PLAY_RESPONSE, PLAY_ACCEPTED, PLAY_REJECTED, PASS_GAME};
+   WANT_TO_PLAY_WITH, PLAY_REQUEST, PLAY_RESPONSE, PLAY_ACCEPTED, PLAY_REJECTED, PASS_GAME, 
+   WANT_TO_RESET_BOARD, RESET_WARNING_SINGLE, RESET_WARNING_CONNECTED, RESET_PAST_WARNING, RESET_GUI, RESET_NET,
+   PRESSED_BOARD_NOT_PLAYING};
 
+struct t_checkMate
+{
+   bool winner;
+};
+
+struct t_inCheck
+{
+   t_myVector2 attackingPiece;
+};
 
 struct t_boardClicked
 {
@@ -91,6 +102,8 @@ struct t_message
       t_playResponse playResponse;
       t_playRequest playRequest;
       t_gamePass gamePass;
+      t_inCheck inCheck;
+      t_checkMate checkMate;
    };
 
    std::vector<t_dataPacket> dataPackets;

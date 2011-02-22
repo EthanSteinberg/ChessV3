@@ -119,3 +119,8 @@ std::vector<t_message> t_chessEngine::boardClickedSingle(const t_message &messag
 
    return buffer;
 }
+
+bool t_chessEngine::getTurn()
+{
+   return turn;
+}

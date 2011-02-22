@@ -13,8 +13,11 @@ void t_chessEngine::moveMove(t_myVector2 pos, std::vector<t_message> &buffer)
    t_message newMessage;
    newMessage.id = HIGHLIGHT_SPACE;
 
-   if (checkCheck(pos,selectedPos))
+   if (boost::optional<t_myVector2> temp = checkCheck(pos,selectedPos))
    {
+      newMessage.id = IN_CHECK;
+      newMessage.inCheck.attackingPiece = temp.get();
+      buffer.push_back(newMessage);
       std::cout<<"I am in check"<<std::endl;
       return;
    }
@@ -83,6 +86,9 @@ void t_chessEngine::moveMove(t_myVector2 pos, std::vector<t_message> &buffer)
 
    if (checkCheckmate())
    {
+      newMessage.id = CHECK_MATE;
+      newMessage.checkMate.winner = !turn;
+      buffer.push_back(newMessage);
       std::cout<<"I win"<<std::endl;
    }
 
@@ -94,8 +100,11 @@ void t_chessEngine::attackMove(t_myVector2 pos, std::vector<t_message> &buffer)
    t_message newMessage;
    newMessage.id = HIGHLIGHT_SPACE;
 
-   if (checkCheck(pos,selectedPos))
+   if (boost::optional<t_myVector2> temp = checkCheck(pos,selectedPos))
    {
+      newMessage.id = IN_CHECK;
+      newMessage.inCheck.attackingPiece = temp.get();
+      buffer.push_back(newMessage);
       std::cout<<"I am in check"<<std::endl;
       return;
    }
@@ -168,6 +177,9 @@ void t_chessEngine::attackMove(t_myVector2 pos, std::vector<t_message> &buffer)
 
    if (checkCheckmate())
    {
+      newMessage.id = CHECK_MATE;
+      newMessage.checkMate.winner = !turn;
+      buffer.push_back(newMessage);
       std::cout<<"I win"<<std::endl;
    }
 }
@@ -176,8 +188,11 @@ void t_chessEngine::castleMove(t_myVector2 pos, std::vector<t_message> &buffer)
    t_message newMessage;
    newMessage.id = HIGHLIGHT_SPACE;
 
-   if (checkCheck(pos,selectedPos))
+   if (boost::optional<t_myVector2>  temp = checkCheck(pos,selectedPos))
    {
+      newMessage.id = IN_CHECK;
+      newMessage.inCheck.attackingPiece = temp.get();
+      buffer.push_back(newMessage);
       std::cout<<"I am in check"<<std::endl;
       return;
    }
@@ -291,6 +306,9 @@ void t_chessEngine::castleMove(t_myVector2 pos, std::vector<t_message> &buffer)
 
    if (checkCheckmate())
    {
+      newMessage.id = CHECK_MATE;
+      newMessage.checkMate.winner = !turn;
+      buffer.push_back(newMessage);
       std::cout<<"I win"<<std::endl;
    }
 

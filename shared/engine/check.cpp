@@ -1,13 +1,14 @@
 #include <iostream>
 
 #include <boost/thread.hpp>
+#include <boost/optional.hpp>
 
 #include <cstdio>
 
 #include "chessEngine.h"
 #include "messages.h"
 
-bool t_chessEngine::checkCheck(const t_myVector2 &posTo, const t_myVector2 &oldPos)
+boost::optional<t_myVector2> t_chessEngine::checkCheck(const t_myVector2 &posTo, const t_myVector2 &oldPos)
 {
    int temp = board[posTo.y][posTo.x];
    board[posTo.y][posTo.x] = board[oldPos.y][oldPos.x];
@@ -423,7 +424,7 @@ bool t_chessEngine::checkCheck(const t_myVector2 &posTo, const t_myVector2 &oldP
 
    board[oldPos.y][oldPos.x] = board[posTo.y][posTo.x];
    board[posTo.y][posTo.x] = temp;
-   return 0;
+   return boost::optional<t_myVector2>();
 
 bad:
 
@@ -439,7 +440,7 @@ bad:
 
    board[oldPos.y][oldPos.x] = board[posTo.y][posTo.x];
    board[posTo.y][posTo.x] = temp;
-   return 1;
+   return square;
 
 }
 
