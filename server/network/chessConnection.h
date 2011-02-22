@@ -9,6 +9,7 @@
 
 class t_connectionData;
 class t_sharedGame;
+class t_myData;
 
 class t_chessConnection : boost::noncopyable
 {

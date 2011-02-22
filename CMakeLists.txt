@@ -8,7 +8,7 @@ endif()
 
 set(CMAKE_BUILD_TYPE Debug)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-Wall -march=native -std=c++0x  -g -O0 -Wshadow")
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -march=native -std=c++0x  -g -O0 -Wshadow  ")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")	
 
@@ -28,6 +28,7 @@ include_directories(${SFML_INCLUDE_DIR})
 
 find_package(GTK2 REQUIRED gtk gtkmm) 
 include_directories(${GTK2_INCLUDE_DIRS} /usr/include/freetype2)
+
 
 include_directories(shared)
 
