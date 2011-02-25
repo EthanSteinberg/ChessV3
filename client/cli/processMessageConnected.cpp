@@ -15,7 +15,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
 
    case BOARD_CLICKED:
    {
-      if (!playing)
+      if (status == NOTHING)
       {
          t_message newMessage;
          newMessage.id = PRESSED_BOARD_NOT_PLAYING;
@@ -165,7 +165,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
 
    case PLAY_ACCEPTED:
    {
-      playing = 1;
+      status = PLAYING_NET;
       std::cout<<"play accepted"<<std::endl;
 
       chessEngine.reset();
@@ -187,7 +187,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
    {
       if (message.playResponse.response == 1)
       {
-         playing = 1;
+         status = PLAYING_NET;
          chessEngine.reset();
          t_message newMessage;
          newMessage.id = RESET_GUI;
@@ -214,7 +214,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
 
    case DISCONNECT_MESSAGE:
    {
-      if (playing)
+      if (status)
       {
          t_message newMessage;
          newMessage.id = RESET_GUI;
@@ -224,7 +224,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
             sharedData.clientBuffer.push_front(newMessage);
             sharedData.clientCondition.notify_one();
          }
-         playing = 0;
+         status = NOTHING;
       }
       {
          boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
@@ -289,7 +289,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
    {
       std::cout<<"Gui wants to reset the board"<<std::endl;
 
-      if (playing)
+      if (status)
       {
          t_message newMessage;
          newMessage.id = RESET_WARNING_CONNECTED;
@@ -310,7 +310,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
    {
       std::cout<<"Gui wants to reset past the warning"<<std::endl;
 
-      if (playing)
+      if (status)
       {
          t_message newMessage;
 

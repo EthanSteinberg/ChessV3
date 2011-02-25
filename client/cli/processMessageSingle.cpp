@@ -16,16 +16,32 @@ bool t_chessCli::processMessageSingle(const t_message &message)
 
    case BOARD_CLICKED:
    {
-      std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
-
+      if (status != NOTHING)
       {
-         boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+         std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
 
-         BOOST_FOREACH(t_message &newMessage, messageBuffer)
          {
-            sharedData.clientBuffer.push_front(newMessage);
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            BOOST_FOREACH(t_message &newMessage, messageBuffer)
+            {
+               sharedData.clientBuffer.push_front(newMessage);
+            }
+            sharedData.clientCondition.notify_one();
          }
-         sharedData.clientCondition.notify_one();
+      }
+
+      else
+      {
+         t_message newMessage;
+         newMessage.id = PRESSED_BOARD_NOT_PLAYING;
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            sharedData.netBuffer.push_front(newMessage);
+            sharedData.netCondition.notify_one();
+         }
       }
 
       break;
@@ -126,15 +142,20 @@ bool t_chessCli::processMessageSingle(const t_message &message)
    {
       std::cout<<"Gui wants to reset the board"<<std::endl;
 
-      t_message newMessage;
-      newMessage.id = RESET_WARNING_SINGLE;
 
+      if (status != NOTHING)
       {
-         boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+         t_message newMessage;
+         newMessage.id = RESET_WARNING_SINGLE;
 
-         sharedData.clientBuffer.push_front(newMessage);
-         sharedData.clientCondition.notify_one();
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            sharedData.clientBuffer.push_front(newMessage);
+            sharedData.clientCondition.notify_one();
+         }
       }
+
       break;
    }
 

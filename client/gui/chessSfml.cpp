@@ -102,6 +102,15 @@ void t_chessGui::reset()
    boardPieces = {};
    boardColors = {};
 
+   for (int i = 0 ;i < 32;i++)
+      sprites[i].SetPosition(8 * width, 8 * height);
+}
+
+void t_chessGui::set()
+{
+   boardPieces = {};
+   boardColors = {};
+
    for (int i = 0; i<8; i++)
    {
       sprites[i].SetPosition(i * width,height*6);

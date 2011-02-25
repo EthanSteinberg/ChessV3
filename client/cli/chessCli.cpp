@@ -8,7 +8,7 @@
 #include "chessCli.h"
 #include "messages.h"
 
-t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData),  connected(0), playing(0)
+t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData),  connected(0), status(NOTHING)
 {
    chessEngine.reset();
 }

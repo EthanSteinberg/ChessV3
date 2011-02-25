@@ -43,6 +43,7 @@ private:
    void initGtkmm();
    void initSfml();
    void reset();
+   void set();
 
    void loadImages();
    void loadSprites();

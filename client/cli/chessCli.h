@@ -33,7 +33,7 @@ private:
    t_sharedData &sharedData;
 
    bool connected;
-   bool playing;
+   enum {NOTHING, PLAYING_SINGLE, PLAYING_TWO, PLAYING_NET} status;
 
    t_chessEngine chessEngine;
 };
