@@ -28,6 +28,8 @@ public:
 
 private:
 
+   void bailOut(boost::system::error_code ecf);
+
    t_sharedData &sharedData;
 
    boost::asio::io_service io_service;

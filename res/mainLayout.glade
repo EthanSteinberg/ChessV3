@@ -503,7 +503,7 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button1</action-widget>
+      <action-widget response="1">button1</action-widget>
       <action-widget response="0">button2</action-widget>
     </action-widgets>
   </object>
@@ -585,6 +585,16 @@
               </packing>
             </child>
             <child>
+              <object class="GtkHSeparator" id="hseparator1">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="padding">10</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkVBox" id="vbox6">
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
@@ -605,6 +615,7 @@
                     <property name="receives_default">False</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
+                    <property name="group">radiobutton4</property>
                   </object>
                   <packing>
                     <property name="position">1</property>
@@ -625,7 +636,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>

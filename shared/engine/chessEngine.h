@@ -33,6 +33,7 @@ private:
    void castleMove(t_myVector2 pos, std::vector<t_message> &buffer);
    void attackMove( t_myVector2 pos, std::vector<t_message> &buffer);
    void moveMove(t_myVector2 pos, std::vector<t_message> &buffer);
+   void clearHighlights(std::vector<t_message> &buffer);
 
    std::vector<t_myVector2> move;
    std::vector<t_myVector2> hit;

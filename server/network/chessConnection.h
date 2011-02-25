@@ -24,6 +24,8 @@ public:
 
 private:
 
+   void needToQuit(boost::system::error_code ecf);
+
    boost::shared_ptr<t_connectionData> connectionData;
    boost::shared_ptr<boost::asio::ip::tcp::socket> socket;
    boost::asio::ip::tcp::endpoint end;

@@ -19,7 +19,23 @@ void t_chessEngine::generateMoves(const t_myVector2 &pos)
 
    if (type == 1) //pawn
    {
-      if (pos.y == 6 - 5 * color)
+
+      bool forwardBlocked = 1;
+      square.x = pos.x;
+      square.y = pos.y -1 + 2 * color;
+
+      if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
+      {
+
+         if (board[square.y][square.x] == 0)
+         {
+            forwardBlocked = 0;
+            move.push_back(square);
+            
+         }
+      }
+
+      if (pos.y == 6 - 5 * color && !forwardBlocked)
       {
          square.x = pos.x;
          square.y = pos.y -2 + 4 * color;
@@ -31,18 +47,6 @@ void t_chessEngine::generateMoves(const t_myVector2 &pos)
             {
                move.push_back(square);
             }
-         }
-      }
-
-      square.x = pos.x;
-      square.y = pos.y -1 + 2 * color;
-
-      if (square.x >= 0 && square.x <= 7 && square.y >=0 && square.y <= 7)
-      {
-
-         if (board[square.y][square.x] == 0)
-         {
-            move.push_back(square);
          }
       }
 

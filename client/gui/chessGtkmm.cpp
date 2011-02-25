@@ -114,11 +114,19 @@ void t_chessGui::initGtkmm()
    builder->get_widget("dialog1",diaPtr);
    connectDialog.reset(diaPtr);
 
+   builder->get_widget("dialog2",diaPtr);
+   newGameDialog.reset(diaPtr);
+
+   builder->get_widget("dialog3",diaPtr);
+   singleSettings.reset(diaPtr);
+
 
    Gtk::MenuItem *network;
    builder->get_widget("networkMenu",network);
    network->signal_activate().connect(sigc::mem_fun(*this, &t_chessGui::openServer));
 
+   builder->get_widget("menuitem7",network);
+   network->signal_activate().connect(sigc::mem_fun(*this, &t_chessGui::openSingleSettings));
 
    builder->get_widget("drawingarea1",myArea);
    myArea->signal_realize().connect(sigc::mem_fun(*this,&t_chessGui::realizeFunc));
@@ -144,9 +152,20 @@ void t_chessGui::initGtkmm()
    builder->get_widget("newButton",item);
    item->signal_activate().connect(sigc::mem_fun(*this, &t_chessGui::newButton));
 
+
+   builder->get_widget("imagemenuitem1",item);
+   item->signal_activate().connect(sigc::mem_fun(*this, &t_chessGui::openNewGame));
+
    builder->get_widget("entry4",serverEntry);
    builder->get_widget("entry3",nameEntry);
    builder->get_widget("label4",label);
+   builder->get_widget("radiobutton1",Single);
+   builder->get_widget("radiobutton2",Two);
+   builder->get_widget("radiobutton6",customUci);
+   builder->get_widget("button11",uciButton);
+
+   customUci->signal_toggled().connect(sigc::mem_fun(*this, &t_chessGui::customUciToggled));
+
 
 }
 
@@ -182,3 +201,56 @@ bool t_chessGui::mouseButtonPressedEvent(GdkEventButton *event)
 
    return true;
 }
+
+void t_chessGui::openNewGame()
+{
+   int result = newGameDialog->run();
+
+
+   if (result == 1)
+
+   {
+      t_message newMessage;
+      if (Single->get_active())
+      {
+         newMessage.id = NEW_GAME_TWO;
+      }
+
+      else
+         newMessage.id = NEW_GAME_ONE;
+
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+         sharedData.gameBuffer.push_front(newMessage);
+      }
+      sharedData.gameCondition.notify_one();
+   }
+
+   newGameDialog->hide();
+}
+
+void t_chessGui::openSingleSettings()
+{
+   int result = singleSettings->run();
+
+   if (result == 1)
+   {
+   }
+
+   singleSettings->hide();
+}
+
+void t_chessGui::customUciToggled()
+{
+   if (customUci->get_active())
+   {
+      uciButton->show();
+   }
+
+   else
+   {
+      uciButton->hide();
+   }
+}
+

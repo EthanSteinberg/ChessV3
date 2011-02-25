@@ -16,7 +16,7 @@ bool t_chessCli::processMessageSingle(const t_message &message)
 
    case BOARD_CLICKED:
    {
-      if (status != NOTHING)
+      if (status  == PLAYING_TWO)
       {
          std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
 
@@ -177,6 +177,23 @@ bool t_chessCli::processMessageSingle(const t_message &message)
       break;
    }
 
+   case NEW_GAME_TWO:
+   {
+      std::cout<<"Cli is starting a new game for two"<<std::endl;
+
+      t_message newMessage;
+      newMessage.id = SET_GUI;
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+
+         sharedData.clientBuffer.push_front(newMessage);
+         sharedData.clientCondition.notify_one();
+      }
+
+      status =  PLAYING_TWO;
+      break;
+   }
+
    case QUIT_MESSAGE:
    {
       std::cout<<"Cli told to quit"<<std::endl;
@@ -190,7 +207,7 @@ bool t_chessCli::processMessageSingle(const t_message &message)
    return 1;
 
    default:
-      std::cout<<"And I do not know what it was"<<std::endl;
+      std::cout<<"And I do not know what it was "<<message.id<<std::endl;
 
    }
 

@@ -36,6 +36,9 @@ private:
    enum {NOTHING, PLAYING_SINGLE, PLAYING_TWO, PLAYING_NET} status;
 
    t_chessEngine chessEngine;
+
+   std::string uciLocation;
+   bool uciTurn;
 };
 
 #endif

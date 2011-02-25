@@ -53,13 +53,21 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
    newNetMessage.id = NET_JOIN_SERVER;
    strcpy(newNetMessage.netJoinServer.name,name.c_str());
 
-   socket.send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+   boost::system::error_code ecf;
+   boost::asio::write(socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+   if (ecf)
+   {
+      bailOut(ecf);
+      return 0;
+   }
 
    for (;;)
    {
       // socket.send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
       for (;;)
       {
+
          t_message message;
          {
             boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
@@ -89,7 +97,14 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
             t_netMessage aNewNetMessage;
             aNewNetMessage.id = NET_REFRESH_CONNECTION;
 
-            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            boost::asio::write(socket,boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)),boost::asio::transfer_all(),ecf);
+            
+            if (ecf)
+            {
+               bailOut(ecf);
+               return 0;
+            }
+
             break;
          }
 
@@ -101,7 +116,13 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
             aNewNetMessage.id =  NET_WANT_TO_PLAY_WITH;
 
             strcpy (aNewNetMessage.netWantToPlayWith.name,message.wantToPlayWith.name);
-            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            boost::asio::write(socket,boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               bailOut(ecf);
+               return 0;
+            }
             break;
          }
 
@@ -113,7 +134,14 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
             aNewNetMessage.id =  NET_BOARD_CLICKED;
             aNewNetMessage.netBoardClicked.pos = message.boardClicked.pos;
 
-            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            boost::asio::write(socket,boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               bailOut(ecf);
+               return 0;
+            }
+
             break;
          }
 
@@ -127,7 +155,14 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
             aNewNetMessage.netPlayResponse.response = message.playResponse.response;
 
             strcpy (aNewNetMessage.netPlayResponse.name,message.playResponse.name);
-            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            boost::asio::write(socket,boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               bailOut(ecf);
+               return 0;
+            }
+
             break;
          }
 
@@ -138,7 +173,7 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
             t_netMessage aNewNetMessage;
             aNewNetMessage.id = NET_QUIT_MESSAGE;
 
-            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            boost::asio::write(socket,boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)),boost::asio::transfer_all(),ecf);
             socket.close();
 
             return 0;
@@ -151,7 +186,7 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
             t_netMessage aNewNetMessage;
             aNewNetMessage.id = NET_QUIT_MESSAGE;
 
-            socket.send(boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)));
+            boost::asio::write(socket,boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)),boost::asio::transfer_all(),ecf);
 
             return 1;
          }
@@ -162,10 +197,13 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
 
       for (;;)
       {
-         boost::system::error_code ecf;
-
          if (!socket.available(ecf))
          {
+            if (ecf != 0)
+            {
+            std::cout<<"I have an error for you "<<ecf.message()<<ecf<<std::endl;
+            exit(0);
+            }
             break;
          }
 
@@ -399,4 +437,10 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
       }
    }
 
+}
+
+void t_chessNet::bailOut(boost::system::error_code ecf)
+{
+   std::cout<<"I have recieved the error "<<ecf.message()<<" and "<<ecf<<std::endl;
+   socket.close();
 }

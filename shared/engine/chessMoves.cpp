@@ -11,7 +11,6 @@
 void t_chessEngine::moveMove(t_myVector2 pos, std::vector<t_message> &buffer)
 {
    t_message newMessage;
-   newMessage.id = HIGHLIGHT_SPACE;
 
    if (boost::optional<t_myVector2> temp = checkCheck(pos,selectedPos))
    {
@@ -36,48 +35,13 @@ void t_chessEngine::moveMove(t_myVector2 pos, std::vector<t_message> &buffer)
 
    removeCastle(pos,selectedPos);
 
-   selected = 0;
-   newMessage.highlightSpace.pos = selectedPos;
-   newMessage.highlightSpace.color = 0;
+   clearHighlights(buffer);
 
-   {
+   newMessage.id = MOVE_PIECE;
+   newMessage.movePiece.pos = pos;
+   newMessage.movePiece.oldPos = selectedPos;
 
-      buffer.push_back(newMessage);
-
-      for (auto iter = move.begin(); iter != move.end(); iter++)
-      {
-         newMessage.highlightSpace.pos = *iter;
-         newMessage.highlightSpace.color = 0;
-
-         buffer.push_back(newMessage);
-      }
-
-      for (auto iter = hit.begin(); iter != hit.end(); iter++)
-      {
-         newMessage.highlightSpace.pos = *iter;
-         newMessage.highlightSpace.color = 0;
-
-         buffer.push_back(newMessage);
-      }
-
-      for (auto iter = castle.begin(); iter != castle.end(); iter++)
-      {
-         newMessage.highlightSpace.pos = *iter;
-         newMessage.highlightSpace.color = 0;
-
-         buffer.push_back(newMessage);
-      }
-
-      newMessage.id = MOVE_PIECE;
-      newMessage.movePiece.pos = pos;
-      newMessage.movePiece.oldPos = selectedPos;
-
-      buffer.push_back(newMessage);
-   }
-
-   move.clear();
-   hit.clear();
-   castle.clear();
+   buffer.push_back(newMessage);
 
    board[pos.y][pos.x] = board[selectedPos.y][selectedPos.x];
    board[selectedPos.y][selectedPos.x] = 0;
@@ -98,7 +62,6 @@ void t_chessEngine::moveMove(t_myVector2 pos, std::vector<t_message> &buffer)
 void t_chessEngine::attackMove(t_myVector2 pos, std::vector<t_message> &buffer)
 {
    t_message newMessage;
-   newMessage.id = HIGHLIGHT_SPACE;
 
    if (boost::optional<t_myVector2> temp = checkCheck(pos,selectedPos))
    {
@@ -127,48 +90,13 @@ void t_chessEngine::attackMove(t_myVector2 pos, std::vector<t_message> &buffer)
 
    removeCastle(pos,selectedPos);
 
-   selected = 0;
-   newMessage.highlightSpace.pos = selectedPos;
-   newMessage.highlightSpace.color = 0;
+   clearHighlights(buffer);
 
-   {
+   newMessage.id = CAPTURE_PIECE;
+   newMessage.movePiece.pos = pos;
+   newMessage.movePiece.oldPos = selectedPos;
 
-      buffer.push_back(newMessage);
-
-      for (auto iter = move.begin(); iter != move.end(); iter++)
-      {
-         newMessage.highlightSpace.pos = *iter;
-         newMessage.highlightSpace.color = 0;
-
-         buffer.push_back(newMessage);
-      }
-
-      for (auto iter = hit.begin(); iter != hit.end(); iter++)
-      {
-         newMessage.highlightSpace.pos = *iter;
-         newMessage.highlightSpace.color = 0;
-
-         buffer.push_back(newMessage);
-      }
-
-      for (auto iter = castle.begin(); iter != castle.end(); iter++)
-      {
-         newMessage.highlightSpace.pos = *iter;
-         newMessage.highlightSpace.color = 0;
-
-         buffer.push_back(newMessage);
-      }
-
-      newMessage.id = CAPTURE_PIECE;
-      newMessage.movePiece.pos = pos;
-      newMessage.movePiece.oldPos = selectedPos;
-
-      buffer.push_back(newMessage);
-   }
-
-   move.clear();
-   hit.clear();
-   castle.clear();
+   buffer.push_back(newMessage);
 
    board[pos.y][pos.x] = board[selectedPos.y][selectedPos.x];
    board[selectedPos.y][selectedPos.x] = 0;
@@ -186,9 +114,24 @@ void t_chessEngine::attackMove(t_myVector2 pos, std::vector<t_message> &buffer)
 void t_chessEngine::castleMove(t_myVector2 pos, std::vector<t_message> &buffer)
 {
    t_message newMessage;
-   newMessage.id = HIGHLIGHT_SPACE;
 
-   if (boost::optional<t_myVector2>  temp = checkCheck(pos,selectedPos))
+
+   t_myVector2 temp2;
+   temp2.y = pos.y;
+
+   for (temp2.x = pos.x; temp2.x != selectedPos.x; temp2.x += ((selectedPos.x - pos.x)/ labs(selectedPos.x - pos.x)))
+   {
+      if (boost::optional<t_myVector2>  temp = checkCheck(temp2,selectedPos))
+      {
+         newMessage.id = IN_CHECK;
+         newMessage.inCheck.attackingPiece = temp.get();
+         buffer.push_back(newMessage);
+         std::cout<<"I am in check"<<std::endl;
+         return;
+      }
+   }
+
+   if (boost::optional<t_myVector2>  temp = checkCheck(selectedPos,selectedPos))
    {
       newMessage.id = IN_CHECK;
       newMessage.inCheck.attackingPiece = temp.get();
@@ -211,62 +154,27 @@ void t_chessEngine::castleMove(t_myVector2 pos, std::vector<t_message> &buffer)
 
    removeCastle(pos,selectedPos);
 
-   selected = 0;
-   newMessage.highlightSpace.pos = selectedPos;
-   newMessage.highlightSpace.color = 0;
+   clearHighlights(buffer);
 
+   newMessage.id = MOVE_PIECE;
+   newMessage.movePiece.pos = pos;
+   newMessage.movePiece.oldPos = selectedPos;
+
+   buffer.push_back(newMessage);
+
+   if (pos.x == 2) //left castle
    {
-
-      buffer.push_back(newMessage);
-
-      for (auto iter = move.begin(); iter != move.end(); iter++)
-      {
-         newMessage.highlightSpace.pos = *iter;
-         newMessage.highlightSpace.color = 0;
-
-         buffer.push_back(newMessage);
-      }
-
-      for (auto iter = hit.begin(); iter != hit.end(); iter++)
-      {
-         newMessage.highlightSpace.pos = *iter;
-         newMessage.highlightSpace.color = 0;
-
-         buffer.push_back(newMessage);
-      }
-
-      for (auto iter = castle.begin(); iter != castle.end(); iter++)
-      {
-         newMessage.highlightSpace.pos = *iter;
-         newMessage.highlightSpace.color = 0;
-
-         buffer.push_back(newMessage);
-      }
-
-      newMessage.id = MOVE_PIECE;
-      newMessage.movePiece.pos = pos;
-      newMessage.movePiece.oldPos = selectedPos;
-
-      buffer.push_back(newMessage);
-
-      if (pos.x == 2) //left castle
-      {
-         newMessage.movePiece.pos.x = 3;
-         newMessage.movePiece.oldPos.x = 0;
-      }
-
-      else
-      {
-         newMessage.movePiece.pos.x = 5;
-         newMessage.movePiece.oldPos.x = 7;
-      }
-
-      buffer.push_back(newMessage);
+      newMessage.movePiece.pos.x = 3;
+      newMessage.movePiece.oldPos.x = 0;
    }
 
-   move.clear();
-   hit.clear();
-   castle.clear();
+   else
+   {
+      newMessage.movePiece.pos.x = 5;
+      newMessage.movePiece.oldPos.x = 7;
+   }
+
+   buffer.push_back(newMessage);
 
    board[pos.y][pos.x] = board[selectedPos.y][selectedPos.x];
    board[selectedPos.y][selectedPos.x] = 0;
@@ -311,5 +219,52 @@ void t_chessEngine::castleMove(t_myVector2 pos, std::vector<t_message> &buffer)
       buffer.push_back(newMessage);
       std::cout<<"I win"<<std::endl;
    }
+
+}
+
+
+void t_chessEngine::clearHighlights(std::vector<t_message> &buffer)
+{
+   t_message newMessage;
+   newMessage.id = HIGHLIGHT_SPACE;
+
+   selected = 0;
+   newMessage.highlightSpace.pos = selectedPos;
+   newMessage.highlightSpace.color = 0;
+
+   {
+
+      buffer.push_back(newMessage);
+
+      for (auto iter = move.begin(); iter != move.end(); iter++)
+      {
+         newMessage.highlightSpace.pos = *iter;
+         newMessage.highlightSpace.color = 0;
+
+         buffer.push_back(newMessage);
+      }
+
+      for (auto iter = hit.begin(); iter != hit.end(); iter++)
+      {
+         newMessage.highlightSpace.pos = *iter;
+         newMessage.highlightSpace.color = 0;
+
+         buffer.push_back(newMessage);
+      }
+
+      for (auto iter = castle.begin(); iter != castle.end(); iter++)
+      {
+         newMessage.highlightSpace.pos = *iter;
+         newMessage.highlightSpace.color = 0;
+
+         buffer.push_back(newMessage);
+      }
+
+   }
+
+   move.clear();
+   hit.clear();
+   castle.clear();
+
 
 }

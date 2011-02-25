@@ -123,6 +123,16 @@ bool t_chessGui::checkBuffer()
          std::cout<<"Reseting the gui"<<std::endl;
          reset();
 
+         myArea->queue_draw();
+         break;
+      }
+
+      case SET_GUI:
+      {
+         std::cout<<"setting the gui"<<std::endl;
+         set();
+
+         myArea->queue_draw();
          break;
       }
 
@@ -281,7 +291,7 @@ bool t_chessGui::checkBuffer()
          break;
       }
       default:
-         std::cout<<"The client does not know what it recieved"<<std::endl;
+         std::cout<<"The client does not know what it recieved "<<message.id<<std::endl;
       }
    }
 

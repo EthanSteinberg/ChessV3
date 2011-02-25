@@ -76,12 +76,17 @@ private:
    boost::scoped_ptr<Gtk::Window> mainWindow;
    boost::scoped_ptr<Gtk::Window> serverWindow;
    boost::scoped_ptr<Gtk::Dialog> connectDialog;
+   boost::scoped_ptr<Gtk::Dialog> singleSettings;
+   boost::scoped_ptr<Gtk::Dialog> newGameDialog;
 
    Gtk::DrawingArea *myArea;
    Gtk::Entry *nameEntry;
    Gtk::Entry *serverEntry;
    Gtk::Label *label;
    Gtk::TreeView *view;
+   Gtk::RadioButton *Single, *Two;
+   Gtk::RadioButton *customUci;
+   Gtk::Button *uciButton;
    
 
    t_sharedData &sharedData;
@@ -100,6 +105,9 @@ private:
    t_myVector2 checkPos;
 
    //Gui Callbacks
+   void customUciToggled();
+   void openSingleSettings();
+   void openNewGame();
    void newButton();
    bool drawBoard(GdkEventExpose *event);
    bool mouseButtonPressedEvent(GdkEventButton* event);

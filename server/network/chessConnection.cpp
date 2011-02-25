@@ -24,6 +24,9 @@ using namespace boost::asio::ip;
 
 t_chessConnection::t_chessConnection(boost::shared_ptr<t_connectionData> theSharedData, const boost::shared_ptr<tcp::socket> &theSocket, tcp::endpoint theEnd) : connectionData(theSharedData), socket(theSocket), end(theEnd), color(0), playing(0)
 {
+   boost::asio::socket_base::keep_alive option(true);
+   socket->set_option(option);
+
    std::cout<<"Connection made !!"<<std::endl;
 }
 
@@ -33,6 +36,7 @@ void t_chessConnection::run()
    for (;;)
    {
       boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+      boost::system::error_code ecf;
 
       for (;;)
       {
@@ -67,7 +71,13 @@ void t_chessConnection::run()
 
             strcpy(newNetMessage.netPlayRequest.name,message.playRequest.name);
 
-            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
 
             break;
          }
@@ -82,12 +92,25 @@ void t_chessConnection::run()
             if (message.playResponse.response == 0)
             {
                newNetMessage.id = NET_PLAY_REJECTED;
-               socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+               boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+               if (ecf)
+               {
+                  needToQuit(ecf);
+                  return;
+               }
+
                break;
             }
 
             newNetMessage.id = NET_PLAY_ACCEPTED;
-            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
 
             int found = 0;
             boost::shared_ptr<t_connectionData> tempConnData;
@@ -157,7 +180,13 @@ void t_chessConnection::run()
             newNetMessage.netHighlightSpace.pos = message.highlightSpace.pos;
             newNetMessage.netHighlightSpace.color = message.highlightSpace.color;
 
-            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
 
             break;
          }
@@ -171,7 +200,13 @@ void t_chessConnection::run()
             newNetMessage.netMovePiece.pos = message.movePiece.pos;
             newNetMessage.netMovePiece.oldPos = message.movePiece.oldPos;
 
-            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
 
             break;
          }
@@ -185,7 +220,14 @@ void t_chessConnection::run()
             newNetMessage.netMovePiece.pos = message.movePiece.pos;
             newNetMessage.netMovePiece.oldPos = message.movePiece.oldPos;
 
-            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
 
             break;
          }
@@ -198,7 +240,14 @@ void t_chessConnection::run()
             newNetMessage.id = NET_CHECK_MATE;
             newNetMessage.netCheckMate.winner = message.checkMate.winner;
 
-            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
+
             break;
          }
 
@@ -210,7 +259,14 @@ void t_chessConnection::run()
             newNetMessage.id = NET_IN_CHECK;
             newNetMessage.netInCheck.attackingPiece = message.inCheck.attackingPiece;;
 
-            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
+
             break;
          }
 
@@ -232,10 +288,17 @@ void t_chessConnection::run()
 
          if (!socket->available(ec))
          {
-            break;
+            if (!ec)
+            {
+               break;
+            }
+
+            else
+            {
+               needToQuit(ec);
+               break;
+            }
          }
-
-
 
          std::cout<<"About to read the the connection that \"should\" be there...   "<<ec<<std::endl;
 
@@ -275,7 +338,13 @@ void t_chessConnection::run()
                t_netMessage newNetMessage;
 
                newNetMessage.id = NET_CONNECTION_BAD_NAME;
-               socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+               boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+               if (ecf)
+               {
+                  needToQuit(ecf);
+                  return;
+               }
 
                std::cout<<"But the name was bad..."<<std::endl;
                return;
@@ -299,7 +368,13 @@ void t_chessConnection::run()
             t_netMessage newNetMessage;
 
             newNetMessage.id = NET_CONNECTION_SUCCESS;
-            socket->send(boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)));
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
 
             break;
          }
@@ -313,7 +388,14 @@ void t_chessConnection::run()
 
                netMessage.netRefreshConnection.numOfPackets = connectionData->myDataInfo->myDataBase.size();
 
-               socket->send(boost::asio::buffer(&netMessage,sizeof(netMessage)));
+               boost::asio::write(*socket,boost::asio::buffer(&netMessage,sizeof(netMessage)),boost::asio::transfer_all(),ecf);
+
+               if (ecf)
+               {
+                  needToQuit(ecf);
+                  return;
+               }
+
                t_dataPacket dataPacket;
 
                for (auto iter = connectionData->myDataInfo->myDataBase.begin(); iter != connectionData->myDataInfo->myDataBase.end(); iter++)
@@ -323,7 +405,14 @@ void t_chessConnection::run()
                   dataPacket.losses = iter->second->losses;
                   dataPacket.status = iter->second->status;
 
-                  socket->send(boost::asio::buffer(&dataPacket,sizeof(dataPacket)));
+                  boost::asio::write(*socket,boost::asio::buffer(&dataPacket,sizeof(dataPacket)),boost::asio::transfer_all(),ecf);
+
+
+                  if (ecf)
+                  {
+                     needToQuit(ecf);
+                     return;
+                  }
 
                }
 
@@ -462,5 +551,11 @@ void t_chessConnection::run()
 
    std::cout<<"The thread started, then quit"<<std::endl;
 
+
+}
+
+void t_chessConnection::needToQuit(boost::system::error_code ecf)
+{
+   std::cout<<"The send failed with "<<ecf.message()<<" and "<<ecf<<std::endl;
 
 }
