@@ -18,7 +18,35 @@ enum {QUIT_MESSAGE, BOARD_CLICKED, HIGHLIGHT_SPACE, MOVE_PIECE, CAPTURE_PIECE, I
    WANT_TO_PLAY_WITH, PLAY_REQUEST, PLAY_RESPONSE, PLAY_ACCEPTED, PLAY_REJECTED, PASS_GAME, 
    WANT_TO_RESET_BOARD, RESET_WARNING_SINGLE, RESET_WARNING_CONNECTED, RESET_PAST_WARNING, RESET_GUI, RESET_NET, SET_GUI, NEW_GAME_TWO, NEW_GAME_ONE, 
    PRESSED_BOARD_NOT_PLAYING,
-   SET_UCI_TURN, NEW_UCI_LOCATION};
+   SET_UCI_TURN, NEW_UCI_LOCATION, UCI_RESPONSE,
+   SHOW_PAWN_PROMOTE, RECIEVE_PAWN_PROMOTE, CHANGE_ICON};
+
+struct t_uciResponse
+{
+   char response[40];
+};
+
+struct t_playAccepted
+{
+   bool side;
+};
+
+struct t_changeIcon
+{
+   int type;
+   t_myVector2 pawnPos;
+};
+
+struct t_showPawnPromote
+{
+   bool color;
+};
+
+struct t_recievePawnPromote
+{
+   int type;
+   int turn;
+};
 
 struct t_uciTurn
 {
@@ -86,6 +114,7 @@ struct t_playResponse
 {
    char name[20];
    bool response;
+   bool side;
 };
 
 struct t_playRequest
@@ -96,6 +125,7 @@ struct t_playRequest
 struct t_gamePass
 {
    boost::shared_ptr<t_sharedGame> *sharedGame;
+   uint8_t side;
 };
 
 struct t_message
@@ -117,6 +147,11 @@ struct t_message
       t_checkMate checkMate;
       t_uciTurn   uciTurn;
       t_uciLocation uciLocation;
+      t_showPawnPromote showPawnPromote;
+      t_recievePawnPromote recievePawnPromote;
+      t_changeIcon   changeIcon;
+      t_playAccepted playAccepted;
+      t_uciResponse uciResponse;
    };
 
    std::vector<t_dataPacket> dataPackets;
@@ -211,7 +246,16 @@ struct t_sharedGame
 
    void pushToGame(t_message &message, bool turn)
    {
+      if (message.id == BOARD_CLICKED)
+      {
       message.boardClicked.turn = turn;
+      }
+
+      else if (message.id == RECIEVE_PAWN_PROMOTE)
+      {
+         message.recievePawnPromote.turn = turn;
+      }
+
       {
          boost::unique_lock<boost::mutex> lock(gameMutex);
 

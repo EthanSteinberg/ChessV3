@@ -9,7 +9,28 @@
 #include <cstdint>
 
 enum {NET_BOARD_CLICKED = 100, NET_HIGHLIGHT_SPACE, NET_MOVE_PIECE, NET_CAPTURE_PIECE, NET_JOIN_SERVER, NET_QUIT_MESSAGE, NET_REFRESH_CONNECTION, NET_CONNECTION_SUCCESS, NET_CONNECTION_BAD_NAME, NET_DISCONNECT, 
-   NET_WANT_TO_PLAY_WITH, NET_PLAY_REQUEST, NET_PLAY_RESPONSE, NET_PLAY_ACCEPTED, NET_PLAY_REJECTED, NET_LEAVE_GAME, NET_CHECK_MATE, NET_IN_CHECK};
+   NET_WANT_TO_PLAY_WITH, NET_PLAY_REQUEST, NET_PLAY_RESPONSE, NET_PLAY_ACCEPTED, NET_PLAY_REJECTED, NET_LEAVE_GAME, NET_CHECK_MATE, NET_IN_CHECK, NET_CHANGE_ICON, NET_SHOW_PAWN_PROMOTE, NET_RECIEVE_PAWN_PROMOTE};
+
+struct t_netPlayAccepted
+{
+   uint8_t side;
+};
+
+struct t_netChangeIcon
+{
+   uint8_t type;
+   t_myVector2 pawnPos;
+};
+
+struct t_netShowPawnPromote
+{
+   uint8_t color;
+};
+
+struct t_netRecievePawnPromote
+{
+   uint8_t type;
+};
 
 struct t_netCheckMate
 {
@@ -62,6 +83,7 @@ struct t_netPlayResponse
 {
    char name[20];
    uint8_t response;
+   uint8_t side;
 };
 
 struct t_netMessage
@@ -80,6 +102,10 @@ struct t_netMessage
       t_netPlayRequest netPlayRequest;
       t_netInCheck netInCheck;
       t_netCheckMate netCheckMate;
+      t_netChangeIcon netChangeIcon;
+      t_netShowPawnPromote netShowPawnPromote;
+      t_netRecievePawnPromote netRecievePawnPromote;
+      t_netPlayAccepted netPlayAccepted;
    };
 
 };

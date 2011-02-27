@@ -158,7 +158,24 @@ void t_chessGui::showRequest(std::string textStuff)
 
    if (result == GTK_RESPONSE_YES)
    {
+      set();
       newMessage.playResponse.response = 1;
+
+      int result2 = chooseSideDialog->run();
+
+      while (result2 != 0)
+      {
+         showMessage("You must choose a side to play as");
+         result2 = chooseSideDialog->run();
+      }
+
+     chooseSideDialog->hide(); 
+
+     if (whiteButton->get_active())
+        newMessage.playResponse.side = 0;
+
+     else
+        newMessage.playResponse.side = 1;
    }
 
    else

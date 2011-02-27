@@ -104,6 +104,7 @@ void t_chessConnection::run()
             }
 
             newNetMessage.id = NET_PLAY_ACCEPTED;
+            newNetMessage.netPlayAccepted.side = !message.playResponse.side;
             boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
 
             if (ecf)
@@ -143,7 +144,7 @@ void t_chessConnection::run()
             }
 
 
-            color = 1;
+            color = !message.playResponse.side;
             playing = 1;
 
             sharedGame = boost::make_shared<t_sharedGame>(tempConnData,connectionData);
@@ -153,6 +154,7 @@ void t_chessConnection::run()
             t_message newMessage;
             newMessage.id = PASS_GAME;
             newMessage.gamePass.sharedGame = &sharedGame;
+            newMessage.gamePass.side = message.playResponse.side;
 
             {
                boost::unique_lock<boost::mutex> lock(tempConnData->connMutex);
@@ -165,9 +167,48 @@ void t_chessConnection::run()
 
          case PASS_GAME:
          {
-            color = 0;
+            color = message.gamePass.side;
             playing = 1;
             sharedGame = *message.gamePass.sharedGame;
+            break;
+         }
+
+         case CHANGE_ICON:
+         {
+            std::cout<<"piece changed"<<std::endl;
+
+            t_netMessage newNetMessage;
+            newNetMessage.id = NET_CHANGE_ICON;
+            newNetMessage.netChangeIcon.pawnPos = message.changeIcon.pawnPos;
+            newNetMessage.netChangeIcon.type = message.changeIcon.type;
+
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
+
+            break;
+         }
+
+         case SHOW_PAWN_PROMOTE:
+         {
+            std::cout<<"piece changed"<<std::endl;
+
+            t_netMessage newNetMessage;
+            newNetMessage.id = NET_SHOW_PAWN_PROMOTE;
+            newNetMessage.netShowPawnPromote.color = message.showPawnPromote.color;
+
+            boost::asio::write(*socket,boost::asio::buffer(&newNetMessage,sizeof(newNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               needToQuit(ecf);
+               return;
+            }
+
             break;
          }
 
@@ -433,6 +474,18 @@ void t_chessConnection::run()
             break;
          }
 
+         case NET_RECIEVE_PAWN_PROMOTE:
+         {
+            std::cout<<"The person has chosen the promotion"<<std::endl;
+
+            t_message newMessage;
+            newMessage.id = RECIEVE_PAWN_PROMOTE;
+            newMessage.recievePawnPromote.type = netMessage.netRecievePawnPromote.type;
+
+            sharedGame->pushToGame(newMessage,color);
+            break;
+         }
+
          case NET_WANT_TO_PLAY_WITH:
          {
             std::cout<<"This network is not a loner and wants to play with someone"<<std::endl;
@@ -520,6 +573,7 @@ void t_chessConnection::run()
 
             newMessage.id = PLAY_RESPONSE;
             newMessage.playResponse.response =  netMessage.netPlayResponse.response;
+            newMessage.playResponse.side =  netMessage.netPlayResponse.side;
             strcpy(newMessage.playResponse.name,connectionData->myDataInfo->myDataBase[end]->name.c_str());
 
             {

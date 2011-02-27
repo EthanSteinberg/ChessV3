@@ -11,6 +11,7 @@ set(SRCS
       addPieceMoves.cpp
       boardClickedSingle.cpp
       chessMoves.cpp
+      insertMove.cpp
 )
 
 add_library(ChessEngine ${HDRS} ${SRCS})

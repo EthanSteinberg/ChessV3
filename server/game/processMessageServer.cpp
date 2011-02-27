@@ -25,11 +25,33 @@ bool t_chessGame::processMessageServer(const t_message &message)
 
          BOOST_FOREACH(t_message &newMessage, messageBuffer)
          {
+            if (newMessage.id == SHOW_PAWN_PROMOTE)
+               sharedGame.pushToOne(newMessage,message.boardClicked.turn);
+            
+            else
             sharedGame.pushToBoth(newMessage);
          }
 
       break;
    }
+
+   case RECIEVE_PAWN_PROMOTE:
+   {
+      printf("The turn was %d\n",message.recievePawnPromote.turn);
+
+      if (message.recievePawnPromote.turn != chessEngine.getTurn())
+         break;
+
+      std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
+
+         BOOST_FOREACH(t_message &newMessage, messageBuffer)
+         {
+            sharedGame.pushToBoth(newMessage);
+         }
+
+      break;
+   }
+
 
    case QUIT_MESSAGE:
    {

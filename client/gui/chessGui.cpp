@@ -34,9 +34,9 @@ bool quitApp(sf::RenderWindow &App,t_sharedData &sharedData)
 
 void t_chessGui::run()
 {
+   initSfml();
    initGtkmm();
 
-   initSfml();
 
 
    Glib::signal_timeout().connect(sigc::mem_fun(*this, &t_chessGui::checkBuffer),100);
@@ -117,6 +117,61 @@ bool t_chessGui::checkBuffer()
          myArea->queue_draw();
          break;
       }
+
+      case SHOW_PAWN_PROMOTE:
+      {
+         int result = showPawnPromote(message.showPawnPromote.color);
+         t_message newMessage;
+         newMessage.id = RECIEVE_PAWN_PROMOTE;
+         newMessage.recievePawnPromote.type = result;
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+            sharedData.gameBuffer.push_front(newMessage);
+         }
+
+         sharedData.gameCondition.notify_one();
+         break;
+      }
+
+      case CHANGE_ICON:
+      {
+         t_myVector2 pawnPos = message.changeIcon.pawnPos;
+         int id = message.changeIcon.type;
+
+         std::cout<<"The type I want to change to is "<<id<<std::endl;
+
+
+         int color = id/8;
+         int type = id%8;
+
+         switch (type)
+         {
+            case 1:
+               sprites[boardPieces[pawnPos.y][pawnPos.x]].SetImage(images[0 + color * 6]);
+               break;
+
+            case 2:
+               sprites[boardPieces[pawnPos.y][pawnPos.x]].SetImage(images[3 + color * 6]);
+               break;
+
+            case 3:
+               sprites[boardPieces[pawnPos.y][pawnPos.x]].SetImage(images[1 + color * 6]);
+               break;
+
+            case 4:
+               sprites[boardPieces[pawnPos.y][pawnPos.x]].SetImage(images[2 + color * 6]);
+               break;
+
+            case 6:
+               sprites[boardPieces[pawnPos.y][pawnPos.x]].SetImage(images[5 + color * 6]);
+               break;
+         }
+
+         break;
+      }
+
 
       case RESET_GUI:
       {
@@ -204,7 +259,11 @@ bool t_chessGui::checkBuffer()
       case PLAY_ACCEPTED:
       {
          std::cout<<"My game attempt was accepted"<<std::endl;
-         showMessage("The other person has accepted the game, good luck");
+         if (message.playAccepted.side == 0) 
+         showMessage("The other person has accepted the game, good luck.\nYou are starting at white.");
+
+         else
+         showMessage("The other person has accepted the game, good luck.\nYou are starting at black.");
          break;
       }
 

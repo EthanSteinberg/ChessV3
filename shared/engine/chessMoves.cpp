@@ -222,6 +222,86 @@ void t_chessEngine::castleMove(t_myVector2 pos, std::vector<t_message> &buffer)
 
 }
 
+void t_chessEngine::promoteMove(t_myVector2 pos, std::vector<t_message> &buffer)
+{
+   t_message newMessage;
+
+   if (boost::optional<t_myVector2> temp = checkCheck(pos,selectedPos))
+   {
+      newMessage.id = IN_CHECK;
+      newMessage.inCheck.attackingPiece = temp.get();
+      buffer.push_back(newMessage);
+      std::cout<<"I am in check"<<std::endl;
+      return;
+   }
+
+   if (turn == 0)
+   {
+      whitePieces.erase(selectedPos);
+      whitePieces.insert(pos);
+   }
+
+   else
+   {
+      blackPieces.erase(selectedPos);
+      blackPieces.insert(pos);
+   }
+
+   removeCastle(pos,selectedPos);
+
+   clearHighlights(buffer);
+
+   newMessage.id = MOVE_PIECE;
+   newMessage.movePiece.pos = pos;
+   newMessage.movePiece.oldPos = selectedPos;
+
+   buffer.push_back(newMessage);
+
+   newMessage.id = SHOW_PAWN_PROMOTE;
+   newMessage.showPawnPromote.color = turn;
+
+   buffer.push_back(newMessage);
+
+   board[pos.y][pos.x] = board[selectedPos.y][selectedPos.x];
+   board[selectedPos.y][selectedPos.x] = 0;
+
+   pawnPos = pos;
+
+   inPawnPromotion = 1;
+
+}
+
+void t_chessEngine::finishPromote(int type, std::vector<t_message> &buffer)
+{
+   t_message newMessage;
+   newMessage.id = HIGHLIGHT_SPACE;
+
+   newMessage.highlightSpace.pos = pawnPos;
+   newMessage.highlightSpace.color = 0;
+
+   buffer.push_back(newMessage);
+   
+   newMessage.id = CHANGE_ICON;
+   newMessage.changeIcon.type = type;
+   newMessage.changeIcon.pawnPos = pawnPos;
+
+   buffer.push_back(newMessage);
+
+   board[pawnPos.y][pawnPos.x] =  type + turn * 8;
+
+   inPawnPromotion = 0;
+
+   turn = !turn;
+
+   if (checkCheckmate())
+   {
+      newMessage.id = CHECK_MATE;
+      newMessage.checkMate.winner = !turn;
+      buffer.push_back(newMessage);
+      std::cout<<"I win"<<std::endl;
+   }
+   
+}
 
 void t_chessEngine::clearHighlights(std::vector<t_message> &buffer)
 {
@@ -260,11 +340,20 @@ void t_chessEngine::clearHighlights(std::vector<t_message> &buffer)
          buffer.push_back(newMessage);
       }
 
+      for (auto iter = pawnPromote.begin(); iter != pawnPromote.end(); iter++)
+      {
+         newMessage.highlightSpace.pos = *iter;
+         newMessage.highlightSpace.color = 0;
+
+         buffer.push_back(newMessage);
+      }
+
    }
 
    move.clear();
    hit.clear();
    castle.clear();
+   pawnPromote.clear();
 
 
 }

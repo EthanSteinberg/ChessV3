@@ -12,6 +12,19 @@ std::vector<t_message> t_chessEngine::boardClickedSingle(const t_message &messag
 {
    std::vector<t_message> buffer;
 
+   if (inPawnPromotion)
+   {
+      if (message.id != RECIEVE_PAWN_PROMOTE)
+         return buffer;
+
+      int type = message.recievePawnPromote.type;
+      finishPromote(type,buffer);
+      std::cout<<"I am in pawn promotion, ID: "<<type<<" and location "<<pawnPos<<std::endl; 
+   }
+
+   else
+   {
+
    t_myVector2 pos = message.boardClicked.pos;
    std::cout<<"It was clicked at "<<pos<<std::endl;
 
@@ -19,45 +32,11 @@ std::vector<t_message> t_chessEngine::boardClickedSingle(const t_message &messag
    newMessage.id = HIGHLIGHT_SPACE;
 
 
-   if (selected)
+    if (selected)
    {
       if (pos == selectedPos)
       {
-         selected = 0;
-         newMessage.highlightSpace.pos = selectedPos;
-         newMessage.highlightSpace.color = 0;
-         {
-
-            buffer.push_back(newMessage);
-
-            for (auto iter = move.begin(); iter != move.end(); iter++)
-            {
-               newMessage.highlightSpace.pos = *iter;
-               newMessage.highlightSpace.color = 0;
-
-               buffer.push_back(newMessage);
-            }
-
-            for (auto iter = hit.begin(); iter != hit.end(); iter++)
-            {
-               newMessage.highlightSpace.pos = *iter;
-               newMessage.highlightSpace.color = 0;
-
-               buffer.push_back(newMessage);
-            }
-
-            for (auto iter = castle.begin(); iter != castle.end(); iter++)
-            {
-               newMessage.highlightSpace.pos = *iter;
-               newMessage.highlightSpace.color = 0;
-
-               buffer.push_back(newMessage);
-            }
-         }
-
-         move.clear();
-         hit.clear();
-         castle.clear();
+         clearHighlights(buffer);
       }
 
       else if (std::find(move.begin(), move.end(), pos) != move.end())
@@ -74,6 +53,12 @@ std::vector<t_message> t_chessEngine::boardClickedSingle(const t_message &messag
       {
          castleMove(pos,buffer);
       }
+
+      else if (std::find(pawnPromote.begin(), pawnPromote.end(), pos) != pawnPromote.end())
+      {
+         promoteMove(pos,buffer);
+      }
+
    }
 
    else if (board[pos.y][pos.x] && board[pos.y][pos.x]/8 == turn)
@@ -112,9 +97,17 @@ std::vector<t_message> t_chessEngine::boardClickedSingle(const t_message &messag
             buffer.push_back(newMessage);
          }
 
+         for (auto iter = pawnPromote.begin(); iter != pawnPromote.end(); iter++)
+         {
+            newMessage.highlightSpace.pos = *iter;
+            newMessage.highlightSpace.color = 5;
+
+            buffer.push_back(newMessage);
+         }
       }
 
 
+   }
    }
 
    return buffer;

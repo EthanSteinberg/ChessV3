@@ -145,6 +145,25 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
             break;
          }
 
+         case RECIEVE_PAWN_PROMOTE:
+         {
+            std::cout<<"Net telling the server that the promote was recieved"<<std::endl;
+
+            t_netMessage aNewNetMessage;
+            aNewNetMessage.id =  NET_RECIEVE_PAWN_PROMOTE;
+            aNewNetMessage.netRecievePawnPromote.type = message.recievePawnPromote.type;
+
+            boost::asio::write(socket,boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)),boost::asio::transfer_all(),ecf);
+
+            if (ecf)
+            {
+               bailOut(ecf);
+               return 0;
+            }
+
+            break;
+         }
+
          case PLAY_RESPONSE:
          {
             std::cout<<"I have gotten a response from the request"<<std::endl;
@@ -153,6 +172,7 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
             aNewNetMessage.id =  NET_PLAY_RESPONSE;
             
             aNewNetMessage.netPlayResponse.response = message.playResponse.response;
+            aNewNetMessage.netPlayResponse.side = message.playResponse.side;
 
             strcpy (aNewNetMessage.netPlayResponse.name,message.playResponse.name);
             boost::asio::write(socket,boost::asio::buffer(&aNewNetMessage,sizeof(aNewNetMessage)),boost::asio::transfer_all(),ecf);
@@ -235,11 +255,12 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
 
          case NET_PLAY_ACCEPTED:
          {
-            std::cout<<"play accepted "<<netMessage.netPlayRequest.name<<std::endl;
+           // std::cout<<"play accepted "<<netMessage.netPlayRequest.name<<std::endl;
 
             t_message message;
             
             message.id = PLAY_ACCEPTED;
+            message.playAccepted.side = netMessage.netPlayAccepted.side;
 
             {
                boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
@@ -313,6 +334,43 @@ bool t_chessNet::connected(const std::string &name, const std::string &address)
 
             sharedData.gameCondition.notify_one();
          break;
+         }
+
+         case NET_CHANGE_ICON:
+         {
+            std::cout<<"net change icon"<<std::endl;
+
+            t_message message;
+            message.id = CHANGE_ICON;
+            message.changeIcon.type = netMessage.netChangeIcon.type;
+            message.changeIcon.pawnPos = netMessage.netChangeIcon.pawnPos;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+
+            sharedData.gameCondition.notify_one();
+            break;
+         }
+
+         case NET_SHOW_PAWN_PROMOTE:
+         {
+            std::cout<<"net show pawn promote"<<std::endl;
+
+            t_message message;
+            message.id = SHOW_PAWN_PROMOTE;
+            message.showPawnPromote.color = netMessage.netShowPawnPromote.color;
+
+            {
+               boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+               sharedData.gameBuffer.push_front(message);
+            }
+
+            sharedData.gameCondition.notify_one();
+            break;
          }
 
          case NET_HIGHLIGHT_SPACE:

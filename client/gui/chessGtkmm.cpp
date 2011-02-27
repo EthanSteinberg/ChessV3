@@ -11,6 +11,38 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
+int t_chessGui::showPawnPromote(bool color)
+{
+   if (color == 0)
+   {
+      promoteSelect->set_model(whiteList);
+   }
+
+   else
+   {
+      promoteSelect->set_model(blackList);
+   }
+
+   int result = pawnPromotionDialog->run();
+   auto iter = promoteSelect->get_active();
+
+   while (result != 0 || !iter)
+   {
+      showMessage("You must select a type to promote to");
+      result = pawnPromotionDialog->run();
+      iter = promoteSelect->get_active();
+   }
+
+   pawnPromotionDialog->hide();
+
+
+   auto row = *iter;
+
+   std::cout<<"I have finished with a selected "<<row[promoteColumns.m_Type]<<std::endl;
+   return row[promoteColumns.m_Type];
+}
+
+
 void t_chessGui::resetWarningConnected()
 {
    Gtk::MessageDialog message("Are you sure you want to start a new game and forfeit?" , false, Gtk::MessageType::MESSAGE_QUESTION, Gtk::ButtonsType::BUTTONS_OK_CANCEL);
@@ -93,6 +125,9 @@ void t_chessGui::initGtkmm()
 
    //builder->get_widget("liststore1",list);
    list = Gtk::ListStore::create(columns);
+   whiteList = Gtk::ListStore::create(promoteColumns);
+   blackList = Gtk::ListStore::create(promoteColumns);
+   initPromoteLists();
 
    builder->get_widget("treeview2",view);
    view->set_model(list);
@@ -100,6 +135,10 @@ void t_chessGui::initGtkmm()
    view->append_column("Status",columns.m_Status);
    view->append_column("Wins",columns.m_Wins);
    view->append_column("Losses",columns.m_Losses);
+
+   builder->get_widget("combobox1",promoteSelect);
+   promoteSelect->pack_start(promoteColumns.m_Picture);
+   promoteSelect->pack_start(promoteColumns.m_Name);
 
    Gtk::Window *winPtr;
 
@@ -120,6 +159,11 @@ void t_chessGui::initGtkmm()
    builder->get_widget("dialog3",diaPtr);
    singleSettings.reset(diaPtr);
 
+   builder->get_widget("dialog4",diaPtr);
+   pawnPromotionDialog.reset(diaPtr);
+
+   builder->get_widget("dialog5",diaPtr);
+   chooseSideDialog.reset(diaPtr);
 
    Gtk::MenuItem *network;
    builder->get_widget("networkMenu",network);
@@ -163,6 +207,8 @@ void t_chessGui::initGtkmm()
    builder->get_widget("radiobutton2",Two);
    builder->get_widget("radiobutton6",customUci);
    builder->get_widget("button11",uciButton);
+   builder->get_widget("radiobutton7",whiteButton);
+
 
    customUci->signal_toggled().connect(sigc::mem_fun(*this, &t_chessGui::customUciToggled));
 
@@ -173,8 +219,8 @@ bool t_chessGui::mouseButtonPressedEvent(GdkEventButton *event)
 {
    if (showingCheck)
    {
-     boardColors[checkPos.y * 8 + checkPos.x] = 0; 
-     showingCheck = 0;
+      boardColors[checkPos.y * 8 + checkPos.x] = 0;
+      showingCheck = 0;
    }
 
    int x = (event->x)/(newWidth/8);
@@ -211,19 +257,23 @@ void t_chessGui::openNewGame()
 
    {
       t_message newMessage;
+
       if (Single->get_active())
       {
          newMessage.id = NEW_GAME_TWO;
       }
 
       else
+      {
          newMessage.id = NEW_GAME_ONE;
+      }
 
       {
          boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
 
          sharedData.gameBuffer.push_front(newMessage);
       }
+
       sharedData.gameCondition.notify_one();
    }
 
@@ -254,3 +304,38 @@ void t_chessGui::customUciToggled()
    }
 }
 
+
+void t_chessGui::initAList(Glib::RefPtr<Gtk::ListStore> theList, bool offset)
+{
+   auto iter = theList->append();
+
+   iter->set_value(promoteColumns.m_Picture,Gdk::Pixbuf::create_from_data(images[0 + offset * 6].GetPixelsPtr(),Gdk::COLORSPACE_RGB,true,8,100,100, 400)->scale_simple(35,35,Gdk::INTERP_HYPER));
+   iter->set_value(promoteColumns.m_Name,Glib::ustring("Pawn"));
+   iter->set_value(promoteColumns.m_Type,1 + offset * 8);
+
+   iter = theList->append();
+   iter->set_value(promoteColumns.m_Picture,Gdk::Pixbuf::create_from_data(images[3 + offset * 6].GetPixelsPtr(),Gdk::COLORSPACE_RGB,true,8,100,100, 400)->scale_simple(35,35,Gdk::INTERP_HYPER));
+   iter->set_value(promoteColumns.m_Name,Glib::ustring("Rook"));
+   iter->set_value(promoteColumns.m_Type,2 + offset * 8);
+
+   iter = theList->append();
+   iter->set_value(promoteColumns.m_Picture,Gdk::Pixbuf::create_from_data(images[1 + offset * 6].GetPixelsPtr(),Gdk::COLORSPACE_RGB,true,8,100,100, 400)->scale_simple(35,35,Gdk::INTERP_HYPER));
+   iter->set_value(promoteColumns.m_Name,Glib::ustring("Knight"));
+   iter->set_value(promoteColumns.m_Type,3 + offset * 8);
+
+   iter = theList->append();
+   iter->set_value(promoteColumns.m_Picture,Gdk::Pixbuf::create_from_data(images[2 + offset * 6].GetPixelsPtr(),Gdk::COLORSPACE_RGB,true,8,100,100, 400)->scale_simple(35,35,Gdk::INTERP_HYPER));
+   iter->set_value(promoteColumns.m_Name,Glib::ustring("Bishop"));
+   iter->set_value(promoteColumns.m_Type,4 + offset * 8);
+
+   iter = theList->append();
+   iter->set_value(promoteColumns.m_Picture,Gdk::Pixbuf::create_from_data(images[5 + offset * 6].GetPixelsPtr(),Gdk::COLORSPACE_RGB,true,8,100,100, 400)->scale_simple(35,35,Gdk::INTERP_HYPER));
+   iter->set_value(promoteColumns.m_Name,Glib::ustring("Queen"));
+   iter->set_value(promoteColumns.m_Type,6 + offset * 8);
+}
+
+void t_chessGui::initPromoteLists()
+{
+   initAList(whiteList,0);
+   initAList(blackList,1);
+}

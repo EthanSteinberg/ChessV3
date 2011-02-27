@@ -33,6 +33,8 @@ void t_chessEngine::reset()
 
    turn = 0;
 
+   inPawnPromotion = 0;
+
    whiteKingPos.x = 4;
    blackKingPos.x = 4;
 

@@ -19,6 +19,7 @@ void t_chessGui::initSfml()
    BrownBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,255,0));
    PurpleBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(160,32,240));
    PinkBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(255,182,193));
+   GreenBox = sf::Shape::Rectangle(0,0,100,100,sf::Color(107,142,35));
 }
 
 bool t_chessGui::drawBoard(GdkEventExpose *event)
@@ -55,6 +56,12 @@ bool t_chessGui::drawBoard(GdkEventExpose *event)
          {
             PinkBox.SetPosition(x*width,y*height);
             App.Draw(PinkBox);
+         }
+
+         else if (boardColors[y*8 + x] == 5)
+         {
+            GreenBox.SetPosition(x*width,y*height);
+            App.Draw(GreenBox);
          }
 
          else if ((x+y)%2)
@@ -113,6 +120,7 @@ void t_chessGui::set()
 
    for (int i = 0; i<8; i++)
    {
+      sprites[i].SetImage(images[0]);
       sprites[i].SetPosition(i * width,height*6);
       boardPieces[6][i] = i;
    }
@@ -144,6 +152,7 @@ void t_chessGui::set()
    //Load blacks
    for (int i = 0; i<8; i++)
    {
+      sprites[i+16].SetImage(images[6]);
       sprites[i+16].SetPosition(i * width,height*1);
       boardPieces[1][i] = i + 16;
    }

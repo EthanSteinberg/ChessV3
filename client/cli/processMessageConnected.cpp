@@ -44,6 +44,61 @@ bool t_chessCli::processMessageConnected(const t_message &message)
       break;
    }
 
+   case RECIEVE_PAWN_PROMOTE:
+   {
+      if (status == NOTHING)
+      {
+         t_message newMessage;
+         newMessage.id = PRESSED_BOARD_NOT_PLAYING;
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            sharedData.netBuffer.push_front(newMessage);
+            sharedData.netCondition.notify_one();
+         }
+      }
+
+      else
+      {
+
+         std::cout<<"Telling net I clicked"<<std::endl;
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+
+            sharedData.netBuffer.push_front(message);
+            sharedData.netCondition.notify_one();
+         }
+      }
+
+      break;
+   }
+
+   case SHOW_PAWN_PROMOTE:
+   {
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+         sharedData.clientBuffer.push_front(message);
+         sharedData.clientCondition.notify_one();
+      }
+
+      break;
+   }
+
+   case CHANGE_ICON:
+   {
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+         sharedData.clientBuffer.push_front(message);
+         sharedData.clientCondition.notify_one();
+      }
+
+      break;
+   }
+
    case CHECK_MATE:
    {
       {
@@ -170,7 +225,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
 
       chessEngine.reset();
       t_message newMessage;
-      newMessage.id = RESET_GUI;
+      newMessage.id = SET_GUI;
 
       {
          boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
@@ -190,7 +245,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
          status = PLAYING_NET;
          chessEngine.reset();
          t_message newMessage;
-         newMessage.id = RESET_GUI;
+         newMessage.id = SET_GUI;
          {
             boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
 

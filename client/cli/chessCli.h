@@ -33,12 +33,15 @@ private:
    t_sharedData &sharedData;
 
    bool connected;
-   enum {NOTHING, PLAYING_SINGLE, PLAYING_TWO, PLAYING_NET} status;
+   enum {NOTHING, PLAYING_ONE, PLAYING_TWO, PLAYING_NET} status;
 
    t_chessEngine chessEngine;
 
    std::string uciLocation;
    bool uciTurn;
+
+   int in[2];
+   FILE *blah;
 };
 
 #endif

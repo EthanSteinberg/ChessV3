@@ -1,4 +1,4 @@
 Hello this is my ChessV3 project. 
-It currently only allows for single player play.
-You need to download the source, then install CEGUI in a folder called lib.
-Then cd to the build folder, and cmake .., then make.
+Just install gtkmm, sfml, boost, and stockfish(for using uci), then mkdir build.
+Cd into build, cmake .., then make to compile.
+Have fun.

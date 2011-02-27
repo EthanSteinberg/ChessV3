@@ -20,6 +20,8 @@ public:
    void reset();
    bool getTurn();
    std::vector<t_message> boardClickedSingle(const t_message &message);
+   t_message insertMove(const t_myVector2 &oldPos, const t_myVector2 &newPos);
+
 
 private:
    void generateMoves(const t_myVector2 &pos);
@@ -33,11 +35,16 @@ private:
    void castleMove(t_myVector2 pos, std::vector<t_message> &buffer);
    void attackMove( t_myVector2 pos, std::vector<t_message> &buffer);
    void moveMove(t_myVector2 pos, std::vector<t_message> &buffer);
+   void promoteMove(t_myVector2 pos, std::vector<t_message> &buffer);
    void clearHighlights(std::vector<t_message> &buffer);
+
+
+   void finishPromote(int type,std::vector<t_message> &buffer);
 
    std::vector<t_myVector2> move;
    std::vector<t_myVector2> hit;
    std::vector<t_myVector2> castle;
+   std::vector<t_myVector2> pawnPromote;
 
    char board[8][8];
 
@@ -51,6 +58,9 @@ private:
    bool blackCanCastleRight;
 
    bool turn;
+
+   bool inPawnPromotion;
+   t_myVector2 pawnPos;
 
    t_myVector2 whiteKingPos;
    t_myVector2 blackKingPos;

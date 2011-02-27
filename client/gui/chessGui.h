@@ -30,6 +30,23 @@ public:
 
 };
 
+class PromoteColumns : public Gtk::TreeModelColumnRecord
+{
+public:
+
+   PromoteColumns()
+   {
+      add(m_Picture);
+      add(m_Name);
+      add(m_Type);
+   }
+
+   Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf> > m_Picture;
+   Gtk::TreeModelColumn<Glib::ustring> m_Name;
+   Gtk::TreeModelColumn<int> m_Type;
+
+};
+
 class t_sharedData;
 
 class t_chessGui : boost::noncopyable
@@ -42,6 +59,8 @@ public:
 private:
    void initGtkmm();
    void initSfml();
+   void initPromoteLists();
+   void initAList(Glib::RefPtr<Gtk::ListStore> ,bool);
    void reset();
    void set();
 
@@ -55,6 +74,7 @@ private:
    void showRequest(std::string message);
    void resetWarningConnected();
    void resetWarningSingle();
+   int showPawnPromote(bool color);
 
    sf::RenderWindow App;
 
@@ -68,16 +88,22 @@ private:
    sf::Shape BrownBox;
    sf::Shape PurpleBox;
    sf::Shape PinkBox;
+   sf::Shape GreenBox;
 
    Glib::RefPtr<Gtk::Builder> builder;
    Glib::RefPtr<Gtk::ListStore> list;
+   Glib::RefPtr<Gtk::ListStore> blackList;
+   Glib::RefPtr<Gtk::ListStore> whiteList;
    ModelColumns columns;
+   PromoteColumns promoteColumns;
 
    boost::scoped_ptr<Gtk::Window> mainWindow;
    boost::scoped_ptr<Gtk::Window> serverWindow;
    boost::scoped_ptr<Gtk::Dialog> connectDialog;
    boost::scoped_ptr<Gtk::Dialog> singleSettings;
    boost::scoped_ptr<Gtk::Dialog> newGameDialog;
+   boost::scoped_ptr<Gtk::Dialog> pawnPromotionDialog;
+   boost::scoped_ptr<Gtk::Dialog> chooseSideDialog;
 
    Gtk::DrawingArea *myArea;
    Gtk::Entry *nameEntry;
@@ -87,6 +113,9 @@ private:
    Gtk::RadioButton *Single, *Two;
    Gtk::RadioButton *customUci;
    Gtk::Button *uciButton;
+   Gtk::ComboBox *promoteSelect;
+   Gtk::RadioButton *whiteButton;
+
    
 
    t_sharedData &sharedData;
