@@ -8,7 +8,7 @@
 #include "chessCli.h"
 #include "messages.h"
 
-t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData),  connected(0), status(NOTHING)
+t_chessCli::t_chessCli(t_sharedData &theSharedData) : sharedData(theSharedData),  connected(0), status(NOTHING), uciTurn(0), uciLocation("stockfish")
 {
    chessEngine.reset();
 }

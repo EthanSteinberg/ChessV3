@@ -50,7 +50,7 @@ void t_chessEngine::generateMoves(const t_myVector2 &pos)
 
             if (board[square.y][square.x] == 0)
             {
-               move.push_back(square);
+               pawnMove.push_back(square);
             }
          }
       }
@@ -74,6 +74,11 @@ void t_chessEngine::generateMoves(const t_myVector2 &pos)
                hit.push_back(square);
             }
          }
+
+         if (square == enPessantPos && enPessantPossible)
+         {
+            pawnPessant.push_back(square);
+         }
       }
 
       square.x = pos.x - 1;
@@ -92,6 +97,11 @@ void t_chessEngine::generateMoves(const t_myVector2 &pos)
             {
                hit.push_back(square);
             }
+         }
+
+         if (square == enPessantPos && enPessantPossible)
+         {
+            pawnPessant.push_back(square);
          }
       }
    }

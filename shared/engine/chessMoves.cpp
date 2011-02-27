@@ -8,6 +8,73 @@
 #include "chessEngine.h"
 #include "messages.h"
 
+
+void t_chessEngine::pessantMove(t_myVector2 pos, std::vector<t_message> &buffer)
+{
+   t_message newMessage;
+
+   board[enPessantPos.y][enPessantPos.x] = board[enPessantPawn.y][enPessantPawn.x];
+   board[enPessantPawn.y][enPessantPawn.x] = 0;
+
+   if (boost::optional<t_myVector2> temp = checkCheck(pos,selectedPos))
+   {
+      newMessage.id = IN_CHECK;
+      newMessage.inCheck.attackingPiece = temp.get();
+      buffer.push_back(newMessage);
+      std::cout<<"I am in check"<<std::endl;
+
+      board[enPessantPawn.y][enPessantPawn.x] = board[enPessantPos.y][enPessantPos.x];
+      board[enPessantPos.y][enPessantPos.x] = 0;
+
+      return;
+   }
+
+   if (turn == 0)
+   {
+      whitePieces.erase(selectedPos);
+      whitePieces.insert(pos);
+
+      blackPieces.erase(enPessantPawn);
+   }
+
+   else
+   {
+      blackPieces.erase(selectedPos);
+      blackPieces.insert(pos);
+
+      whitePieces.erase(enPessantPawn);
+   }
+
+   removeCastle(pos,selectedPos);
+
+   clearHighlights(buffer);
+
+   newMessage.id = MOVE_PIECE;
+   newMessage.movePiece.pos = enPessantPos;
+   newMessage.movePiece.oldPos = enPessantPawn;
+
+   buffer.push_back(newMessage);
+
+   newMessage.id = CAPTURE_PIECE;
+   newMessage.movePiece.pos = pos;
+   newMessage.movePiece.oldPos = selectedPos;
+
+   buffer.push_back(newMessage);
+
+   board[pos.y][pos.x] = board[selectedPos.y][selectedPos.x];
+   board[selectedPos.y][selectedPos.x] = 0;
+
+   turn = !turn;
+
+   if (checkCheckmate())
+   {
+      newMessage.id = CHECK_MATE;
+      newMessage.checkMate.winner = !turn;
+      buffer.push_back(newMessage);
+      std::cout<<"I win"<<std::endl;
+   }
+}
+
 void t_chessEngine::moveMove(t_myVector2 pos, std::vector<t_message> &buffer)
 {
    t_message newMessage;
@@ -156,12 +223,9 @@ void t_chessEngine::castleMove(t_myVector2 pos, std::vector<t_message> &buffer)
 
    clearHighlights(buffer);
 
-   newMessage.id = MOVE_PIECE;
+   newMessage.id = MOVE_PIECE; // Hack reordering in order to make the king move go second and overright what the uci sees as "invalid"
    newMessage.movePiece.pos = pos;
    newMessage.movePiece.oldPos = selectedPos;
-
-   buffer.push_back(newMessage);
-
    if (pos.x == 2) //left castle
    {
       newMessage.movePiece.pos.x = 3;
@@ -174,7 +238,14 @@ void t_chessEngine::castleMove(t_myVector2 pos, std::vector<t_message> &buffer)
       newMessage.movePiece.oldPos.x = 7;
    }
 
+
    buffer.push_back(newMessage);
+
+   newMessage.movePiece.pos = pos;
+   newMessage.movePiece.oldPos = selectedPos;
+
+   buffer.push_back(newMessage);
+
 
    board[pos.y][pos.x] = board[selectedPos.y][selectedPos.x];
    board[selectedPos.y][selectedPos.x] = 0;
@@ -280,7 +351,7 @@ void t_chessEngine::finishPromote(int type, std::vector<t_message> &buffer)
    newMessage.highlightSpace.color = 0;
 
    buffer.push_back(newMessage);
-   
+
    newMessage.id = CHANGE_ICON;
    newMessage.changeIcon.type = type;
    newMessage.changeIcon.pawnPos = pawnPos;
@@ -300,7 +371,7 @@ void t_chessEngine::finishPromote(int type, std::vector<t_message> &buffer)
       buffer.push_back(newMessage);
       std::cout<<"I win"<<std::endl;
    }
-   
+
 }
 
 void t_chessEngine::clearHighlights(std::vector<t_message> &buffer)
@@ -348,12 +419,28 @@ void t_chessEngine::clearHighlights(std::vector<t_message> &buffer)
          buffer.push_back(newMessage);
       }
 
+      for (auto iter = pawnMove.begin(); iter != pawnMove.end(); iter++)
+      {
+         newMessage.highlightSpace.pos = *iter;
+         newMessage.highlightSpace.color = 0;
+
+         buffer.push_back(newMessage);
+      }
+
+      for (auto iter = pawnPessant.begin(); iter != pawnPessant.end(); iter++)
+      {
+         newMessage.highlightSpace.pos = *iter;
+         newMessage.highlightSpace.color = 0;
+
+         buffer.push_back(newMessage);
+      }
    }
 
    move.clear();
    hit.clear();
    castle.clear();
    pawnPromote.clear();
-
+   pawnMove.clear();
+   pawnPessant.clear();
 
 }

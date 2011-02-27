@@ -20,7 +20,7 @@ public:
    void reset();
    bool getTurn();
    std::vector<t_message> boardClickedSingle(const t_message &message);
-   t_message insertMove(const t_myVector2 &oldPos, const t_myVector2 &newPos);
+   std::vector<t_message> insertMove(const t_myVector2 &oldPos, const t_myVector2 &newPos);
 
 
 private:
@@ -36,6 +36,7 @@ private:
    void attackMove( t_myVector2 pos, std::vector<t_message> &buffer);
    void moveMove(t_myVector2 pos, std::vector<t_message> &buffer);
    void promoteMove(t_myVector2 pos, std::vector<t_message> &buffer);
+   void pessantMove(t_myVector2 pos, std::vector<t_message> &buffer);
    void clearHighlights(std::vector<t_message> &buffer);
 
 
@@ -45,6 +46,12 @@ private:
    std::vector<t_myVector2> hit;
    std::vector<t_myVector2> castle;
    std::vector<t_myVector2> pawnPromote;
+   std::vector<t_myVector2> pawnMove;
+   std::vector<t_myVector2> pawnPessant;
+
+   int enPessantPossible;
+   t_myVector2 enPessantPos;
+   t_myVector2 enPessantPawn;
 
    char board[8][8];
 

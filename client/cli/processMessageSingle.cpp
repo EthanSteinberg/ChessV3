@@ -45,23 +45,19 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
 
 
+         t_myVector2 pos;
+         t_myVector2 oldPos;
+
          {
             boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
 
             BOOST_FOREACH(t_message &newMessage, messageBuffer)
             {
+
                if (newMessage.id == CAPTURE_PIECE || newMessage.id == MOVE_PIECE)
                {
-                  char temp[5];
-                  temp[0] = newMessage.movePiece.oldPos.x + 'a';
-                  temp[1] = '8' - newMessage.movePiece.oldPos.y;
-
-                  temp[2] = newMessage.movePiece.pos.x + 'a';
-                  temp[3] = '8' - newMessage.movePiece.pos.y;
-                  temp[4] = 0;
-
-                  std::cout<<temp<<std::endl;
-                  fprintf(blah, "position moves %s\n",temp);
+                  pos = newMessage.movePiece.pos;
+                  oldPos = newMessage.movePiece.oldPos;
                }
 
                sharedData.clientBuffer.push_front(newMessage);
@@ -69,11 +65,22 @@ bool t_chessCli::processMessageSingle(const t_message &message)
             sharedData.clientCondition.notify_one();
          }
 
+
          if (turn != chessEngine.getTurn())
          {
-            fprintf(blah,"go\n");
+            char temp[5];
+            temp[0] = oldPos.x + 'a';
+            temp[1] = '8' - oldPos.y;
+
+            temp[2] = pos.x + 'a';
+            temp[3] = '8' - pos.y;
+            temp[4] = 0;
+
+            std::cout<<temp<<std::endl;
+            fprintf(blah, "position moves %s\ngo\n",temp);
+            fflush(blah);
          }
-         fflush(blah);
+
       }
 
       else
@@ -250,7 +257,6 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          sharedData.clientCondition.notify_one();
       }
 
-      chessEngine.reset();
 
       break;
    }
@@ -259,6 +265,7 @@ bool t_chessCli::processMessageSingle(const t_message &message)
    {
       std::cout<<"Cli is starting a new game for two"<<std::endl;
 
+      chessEngine.reset();
       t_message newMessage;
       newMessage.id = SET_GUI;
       {
@@ -276,6 +283,7 @@ bool t_chessCli::processMessageSingle(const t_message &message)
    {
       std::cout<<"Cli is starting a new game for one"<<std::endl;
 
+      chessEngine.reset();
       t_message newMessage;
       newMessage.id = SET_GUI;
       {
@@ -294,7 +302,7 @@ bool t_chessCli::processMessageSingle(const t_message &message)
       }
 
       boost::thread uciThread(boost::bind(createUci,boost::ref(sharedData),in[0],in[1]));
-      
+
       blah = fdopen(in[1],"w");
 
       fprintf(blah,"uci\nucinewgame\nposition startpos\ngo\n");
@@ -307,7 +315,9 @@ bool t_chessCli::processMessageSingle(const t_message &message)
    case UCI_RESPONSE:
    {
       if (status != PLAYING_ONE)
+      {
          break;
+      }
 
       std::cout<<"Resp: "<<message.uciResponse.response;
 
@@ -315,6 +325,7 @@ bool t_chessCli::processMessageSingle(const t_message &message)
 
       char *last;
       char *pch = strtok_r(temp," ",&last);
+
       if (!strcmp(pch,"bestmove"))
       {
 
@@ -331,13 +342,17 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          pos.x = pch[2] - 'a';
          pos.y = '8' - pch[3];
 
-         t_message newMessage = chessEngine.insertMove(oldPos,pos);
-      {
-         boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+         std::vector<t_message> buffer = chessEngine.insertMove(oldPos,pos);
 
-         sharedData.clientBuffer.push_front(newMessage);
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            BOOST_FOREACH(t_message &newMessage , buffer)
+            {
+               sharedData.clientBuffer.push_front(newMessage);
+            }
+         }
          sharedData.clientCondition.notify_one();
-      }
          std::cout<<"The positions are "<<oldPos<<" and "<<pos<<std::endl;
       }
 

@@ -41,6 +41,7 @@ void t_chessEngine::reset()
    whiteKingPos.y = 7;
    blackKingPos.y = 0;
 
+   enPessantPossible = 0;
 
    t_myVector2 pos;
 
