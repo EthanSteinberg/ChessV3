@@ -206,8 +206,9 @@ void t_chessGui::initGtkmm()
    builder->get_widget("radiobutton1",Single);
    builder->get_widget("radiobutton2",Two);
    builder->get_widget("radiobutton6",customUci);
-   builder->get_widget("button11",uciButton);
+   builder->get_widget("filechooserbutton1",uciButton);
    builder->get_widget("radiobutton7",whiteButton);
+   builder->get_widget("radiobutton3",whiteSingle);
 
 
    customUci->signal_toggled().connect(sigc::mem_fun(*this, &t_chessGui::customUciToggled));
@@ -284,8 +285,34 @@ void t_chessGui::openSingleSettings()
 {
    int result = singleSettings->run();
 
+   t_message newMessage,message;
+
+   newMessage.id = SET_UCI_TURN;
+   message.id = NEW_UCI_LOCATION;
    if (result == 1)
    {
+      newMessage.uciTurn.turn = !(whiteSingle->get_active());
+      std::cout<<"The turn "<<newMessage.uciTurn.turn<<std::endl;
+      if (customUci->get_active())
+      {
+         strncpy(message.uciLocation.place,uciButton->get_filename().c_str(),39);
+         message.uciLocation.place[39] = 0;
+      }
+
+      else
+      {
+         strcpy(message.uciLocation.place,"stockfish");
+      }
+
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.gameMutex);
+
+         sharedData.gameBuffer.push_front(newMessage);
+         sharedData.gameBuffer.push_front(message);
+      }
+
+      sharedData.gameCondition.notify_one();
+      
    }
 
    singleSettings->hide();

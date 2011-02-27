@@ -10,6 +10,7 @@
 #include "myvector2.h"
 
 #include "engine/chessEngine.h"
+#include <string>
 
 
 class t_sharedData;
@@ -18,7 +19,7 @@ class t_message;
 class t_chessUci : boost::noncopyable
 {
 public:
-   t_chessUci(t_sharedData &theSharedData, int fd1, int fd2);
+   t_chessUci(t_sharedData &theSharedData, int fd1, int fd2, std::string filename);
 
    void run();
 
@@ -28,10 +29,11 @@ public:
 
 private:
 
+   t_sharedData &sharedData;
+   std::string filename;
    int in[2];
    int out[2];
 
-   t_sharedData &sharedData;
 
 };
 #endif

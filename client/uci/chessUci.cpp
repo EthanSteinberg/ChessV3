@@ -9,7 +9,7 @@
 #include "messages.h"
 #include <unistd.h>
 
-t_chessUci::t_chessUci(t_sharedData &theSharedData, int fd1, int fd2) : sharedData(theSharedData)
+t_chessUci::t_chessUci(t_sharedData &theSharedData, int fd1, int fd2, std::string theFile) : sharedData(theSharedData), filename(theFile)
 {
    in[0] = fd1;
    in[1] = fd2;
@@ -34,7 +34,7 @@ void t_chessUci::run()
       std::cout<<"I am the child"<<std::endl;
 
 
-      if (execvp("stockfish",NULL))
+      if (execvp(filename.c_str(),NULL))
       {
          perror("Fork and exec");
          exit(1);

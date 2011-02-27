@@ -10,9 +10,9 @@
 #include "../uci/chessUci.h"
 #include "messages.h"
 
-void createUci(t_sharedData &sharedData, int fd1, int fd2)
+void createUci(t_sharedData &sharedData, int fd1, int fd2, std::string filename)
 {
-   t_chessUci newUci(sharedData,fd1,fd2);
+   t_chessUci newUci(sharedData,fd1,fd2,filename);
 
    newUci.run();
 }
@@ -301,13 +301,14 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          exit(1);
       }
 
-      boost::thread uciThread(boost::bind(createUci,boost::ref(sharedData),in[0],in[1]));
+      boost::thread uciThread(boost::bind(createUci,boost::ref(sharedData),in[0],in[1],uciLocation));
 
       blah = fdopen(in[1],"w");
 
-      fprintf(blah,"uci\nucinewgame\nposition startpos\ngo\n");
-      fflush(blah);
 
+      fprintf(blah,"uci\n");
+
+      fflush(blah);
 
       break;
    }
@@ -325,6 +326,17 @@ bool t_chessCli::processMessageSingle(const t_message &message)
 
       char *last;
       char *pch = strtok_r(temp," ",&last);
+
+      if (!strcmp(pch,"uciok\n"))
+      {
+         printf("Starting the game\n");
+         fprintf(blah,"ucinewgame\nposition startpos\n");
+
+         if(uciTurn)
+            fprintf(blah,"go\n");
+
+         fflush(blah);
+      }
 
       if (!strcmp(pch,"bestmove"))
       {
@@ -356,9 +368,23 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          std::cout<<"The positions are "<<oldPos<<" and "<<pos<<std::endl;
       }
 
+      //std::cout<<"I cannot read "<<pch<<std::endl;
+
       free(temp);
 
 
+      break;
+   }
+
+   case SET_UCI_TURN:
+   {
+      uciTurn = message.uciTurn.turn;
+      break;
+   }
+
+   case NEW_UCI_LOCATION:
+   {
+      uciLocation = message.uciLocation.place;
       break;
    }
 

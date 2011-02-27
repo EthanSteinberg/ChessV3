@@ -535,7 +535,7 @@
                 </child>
                 <child>
                   <object class="GtkRadioButton" id="radiobutton5">
-                    <property name="label" translatable="yes">Default builtin engine</property>
+                    <property name="label" translatable="yes">Default engine(stockfish)</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
@@ -565,10 +565,8 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="button11">
-                        <property name="label" translatable="yes">Point me to the executible</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                      <object class="GtkFileChooserButton" id="filechooserbutton1">
+                        <property name="title" translatable="yes">Select the file</property>
                       </object>
                       <packing>
                         <property name="position">1</property>
@@ -686,7 +684,7 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button5</action-widget>
+      <action-widget response="1">button5</action-widget>
       <action-widget response="0">button6</action-widget>
     </action-widgets>
   </object>

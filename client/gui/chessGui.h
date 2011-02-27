@@ -112,9 +112,9 @@ private:
    Gtk::TreeView *view;
    Gtk::RadioButton *Single, *Two;
    Gtk::RadioButton *customUci;
-   Gtk::Button *uciButton;
+   Gtk::FileChooserButton *uciButton;
    Gtk::ComboBox *promoteSelect;
-   Gtk::RadioButton *whiteButton;
+   Gtk::RadioButton *whiteButton, *whiteSingle;
 
    
 

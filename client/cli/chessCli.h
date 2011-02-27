@@ -37,8 +37,8 @@ private:
 
    t_chessEngine chessEngine;
 
-   std::string uciLocation;
    bool uciTurn;
+   std::string uciLocation;
 
    int in[2];
    FILE *blah;

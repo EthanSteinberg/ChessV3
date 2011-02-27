@@ -15,8 +15,8 @@ void t_chessEngine::removeCastle(const t_myVector2 &newPos, const t_myVector2 &p
 
    std::cout<<"I am testing the removal of a castle"<<std::endl;
 
-   if (pos.y == 7 + -7*color)
-   {
+//   if (pos.y == 7 + -7*color) // WTF IS THIS FOR!!!!!!!!!!
+//   {
       if (type == 5)
       {
          if (color == 0)
@@ -36,7 +36,7 @@ void t_chessEngine::removeCastle(const t_myVector2 &newPos, const t_myVector2 &p
          }
 
          std::cout<<"A king has been moved"<<std::endl;
-      }
+  //    }
 
       if (type == 2)
       {
