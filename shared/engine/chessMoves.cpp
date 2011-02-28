@@ -322,7 +322,16 @@ void t_chessEngine::promoteMove(t_myVector2 pos, std::vector<t_message> &buffer)
 
    clearHighlights(buffer);
 
-   newMessage.id = MOVE_PIECE;
+   if (board[pos.y][pos.x] != 0)
+   {
+      newMessage.id = CAPTURE_PIECE;
+   }
+
+   else
+   {
+      newMessage.id = MOVE_PIECE;
+   }
+
    newMessage.movePiece.pos = pos;
    newMessage.movePiece.oldPos = selectedPos;
 
@@ -358,7 +367,7 @@ void t_chessEngine::finishPromote(int type, std::vector<t_message> &buffer)
 
    buffer.push_back(newMessage);
 
-   board[pawnPos.y][pawnPos.x] =  type + turn * 8;
+   board[pawnPos.y][pawnPos.x] =  type;
 
    inPawnPromotion = 0;
 

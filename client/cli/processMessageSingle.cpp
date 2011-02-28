@@ -240,6 +240,8 @@ bool t_chessCli::processMessageSingle(const t_message &message)
             sharedData.clientCondition.notify_one();
          }
       }
+      
+
 
       break;
    }
@@ -247,6 +249,13 @@ bool t_chessCli::processMessageSingle(const t_message &message)
    case RESET_PAST_WARNING:
    {
       std::cout<<"Gui wants to reset past the warning"<<std::endl;
+
+      if (status == PLAYING_ONE)
+      {
+         fprintf(blah,"quit\n");
+
+         fflush(blah);
+      }
 
       t_message newMessage;
       newMessage.id = RESET_GUI;
@@ -257,6 +266,8 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          sharedData.clientCondition.notify_one();
       }
 
+      status = NOTHING;
+
 
       break;
    }
@@ -264,6 +275,13 @@ bool t_chessCli::processMessageSingle(const t_message &message)
    case NEW_GAME_TWO:
    {
       std::cout<<"Cli is starting a new game for two"<<std::endl;
+
+      if (status == PLAYING_ONE)
+      {
+         fprintf(blah,"quit\n");
+
+         fflush(blah);
+      }
 
       chessEngine.reset();
       t_message newMessage;
@@ -282,6 +300,13 @@ bool t_chessCli::processMessageSingle(const t_message &message)
    case NEW_GAME_ONE:
    {
       std::cout<<"Cli is starting a new game for one"<<std::endl;
+
+      if (status == PLAYING_ONE)
+      {
+         fprintf(blah,"quit\n");
+
+         fflush(blah);
+      }
 
       chessEngine.reset();
       t_message newMessage;
@@ -390,6 +415,13 @@ bool t_chessCli::processMessageSingle(const t_message &message)
 
    case QUIT_MESSAGE:
    {
+      if (status == PLAYING_ONE)
+      {
+         fprintf(blah,"quit\n");
+
+         fflush(blah);
+
+      }
       std::cout<<"Cli told to quit"<<std::endl;
       {
          boost::unique_lock<boost::mutex> lock(sharedData.netMutex);

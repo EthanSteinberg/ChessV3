@@ -22,7 +22,7 @@ std::vector<t_message> t_chessEngine::insertMove(const t_myVector2 &oldPos, cons
       kingPos = blackKingPos;
    }
 
-
+   removeCastle(newPos,oldPos);
 
    if (board[pos.y][pos.x] != 0)// if it is a capture, not a move
    {
@@ -52,6 +52,7 @@ std::vector<t_message> t_chessEngine::insertMove(const t_myVector2 &oldPos, cons
       newMessage.id = MOVE_PIECE;
       newMessage.movePiece.pos = pos;
       newMessage.movePiece.oldPos = oldPos;
+
 
       if (turn == 0)
       {

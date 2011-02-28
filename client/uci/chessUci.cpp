@@ -9,7 +9,7 @@
 #include "messages.h"
 #include <unistd.h>
 
-t_chessUci::t_chessUci(t_sharedData &theSharedData, int fd1, int fd2, std::string theFile) : sharedData(theSharedData), filename(theFile)
+t_chessUci::t_chessUci(t_sharedData &theSharedData, int fd1, int fd2,  std::string theFile) : sharedData(theSharedData), filename(theFile)
 {
    in[0] = fd1;
    in[1] = fd2;
@@ -28,6 +28,9 @@ void t_chessUci::run()
 
    if (!pid)
    {
+      close(in[1]);
+      close(out[0]);
+
       dup2(in[0],0);
       dup2(out[1],1);
 
@@ -43,6 +46,9 @@ void t_chessUci::run()
 
    else
    {
+      close (out[1]);
+      close (in[0]);
+
       std::cout<<"I am the parent"<<std::endl;
       std::cout<<pid<<std::endl;
 
@@ -59,7 +65,11 @@ void t_chessUci::run()
 
          if (b == -1)
          {
+            
             perror("getline:");
+            if (feof(blah2))
+               break;
+
             exit(1);
          }
 
@@ -71,6 +81,7 @@ void t_chessUci::run()
             char *last;
             char *pch = strtok_r(temp," ",&last);
 
+            /*
             if (0)
             //if (!strcmp(pch,"info") || !strcmp(pch,"option") || !strcmp(pch,"id"))
             {
@@ -78,10 +89,11 @@ void t_chessUci::run()
                free(temp);
                continue;
             }
+            */
 
 
 
-            //printf("the string is %s\n",buffer);
+            printf("the string is %s\n",buffer);
             strncpy(message.uciResponse.response,buffer,39);
             message.uciResponse.response[39] = 0;
 
@@ -93,12 +105,6 @@ void t_chessUci::run()
             }
 
             free(temp);
-         }
-
-         if (feof(blah2))
-         {
-            printf("The file is over\n");
-            break;
          }
 
          if (b == 0)

@@ -223,6 +223,13 @@ bool t_chessCli::processMessageConnected(const t_message &message)
       status = PLAYING_NET;
       std::cout<<"play accepted"<<std::endl;
 
+      if (status == PLAYING_ONE)
+      {
+         fprintf(blah,"quit\n");
+
+         fflush(blah);
+      }
+
       chessEngine.reset();
       t_message newMessage;
       newMessage.id = SET_GUI;
@@ -242,6 +249,12 @@ bool t_chessCli::processMessageConnected(const t_message &message)
    {
       if (message.playResponse.response == 1)
       {
+      if (status == PLAYING_ONE)
+      {
+         fprintf(blah,"quit\n");
+
+         fflush(blah);
+      }
          status = PLAYING_NET;
          chessEngine.reset();
          t_message newMessage;
@@ -269,7 +282,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
 
    case DISCONNECT_MESSAGE:
    {
-      if (status)
+      if (status == PLAYING_NET)
       {
          t_message newMessage;
          newMessage.id = RESET_GUI;
@@ -344,7 +357,7 @@ bool t_chessCli::processMessageConnected(const t_message &message)
    {
       std::cout<<"Gui wants to reset the board"<<std::endl;
 
-      if (status)
+      if (status != NOTHING)
       {
          t_message newMessage;
          newMessage.id = RESET_WARNING_CONNECTED;
@@ -365,9 +378,9 @@ bool t_chessCli::processMessageConnected(const t_message &message)
    {
       std::cout<<"Gui wants to reset past the warning"<<std::endl;
 
-      if (status)
-      {
          t_message newMessage;
+      if (status == PLAYING_NET)
+      {
 
          newMessage.id = RESET_NET;
          {
@@ -376,15 +389,25 @@ bool t_chessCli::processMessageConnected(const t_message &message)
             sharedData.netBuffer.push_front(newMessage);
             sharedData.netCondition.notify_one();
          }
-
-         newMessage.id = RESET_GUI;
-         {
-            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
-
-            sharedData.clientBuffer.push_front(newMessage);
-            sharedData.clientCondition.notify_one();
-         }
       }
+      std::cout<<"Gui wants to reset past the warning"<<std::endl;
+
+      if (status == PLAYING_ONE)
+      {
+         fprintf(blah,"quit\n");
+
+         fflush(blah);
+      }
+
+      newMessage.id = RESET_GUI;
+      {
+         boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
+
+         sharedData.clientBuffer.push_front(newMessage);
+         sharedData.clientCondition.notify_one();
+      }
+
+      status = NOTHING;
 
       break;
    }
@@ -392,6 +415,13 @@ bool t_chessCli::processMessageConnected(const t_message &message)
 
    case QUIT_MESSAGE:
    {
+      if (status == PLAYING_ONE)
+      {
+         fprintf(blah,"quit\n");
+
+         fflush(blah);
+      }
+
       std::cout<<"It told me to quit"<<std::endl;
       {
          boost::unique_lock<boost::mutex> lock(sharedData.netMutex);
