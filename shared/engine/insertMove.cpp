@@ -141,3 +141,24 @@ std::vector<t_message> t_chessEngine::insertMove(const t_myVector2 &oldPos, cons
 
    return buffer;
 }
+
+std::vector<t_message> t_chessEngine::insertMove(const t_myVector2 &oldPos, const t_myVector2 &newPos, int type)
+{
+   std::vector<t_message> buffer;
+
+   t_message newMessage;
+
+   newMessage.id = CHANGE_ICON;
+   newMessage.changeIcon.type = type;
+   newMessage.changeIcon.pawnPos = oldPos;
+
+   buffer.push_back(newMessage);
+
+   board[pawnPos.y][pawnPos.x] =  type;
+
+   std::vector<t_message> buffer2 = insertMove(oldPos,newPos);
+
+   buffer.insert(buffer.end(), buffer2.begin(), buffer2.end());
+
+   return buffer;
+}

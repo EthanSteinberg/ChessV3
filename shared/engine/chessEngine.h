@@ -19,8 +19,10 @@ public:
 
    void reset();
    bool getTurn();
+   bool inPromotion();
    std::vector<t_message> boardClickedSingle(const t_message &message);
    std::vector<t_message> insertMove(const t_myVector2 &oldPos, const t_myVector2 &newPos);
+   std::vector<t_message> insertMove(const t_myVector2 &oldPos, const t_myVector2 &newPos, int type);
 
 
 private:

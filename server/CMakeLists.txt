@@ -9,6 +9,7 @@ set(SRCS
 
 
 add_executable(ChessServer ${HDRS} ${SRCS})
+#target_link_libraries(ChessServer ChessNetwork ChessGame ${Boost_LIBRARIES} ${GTK2_LIBRARIES})
 target_link_libraries(ChessServer ChessNetwork ChessGame ${Boost_LIBRARIES})
 
 add_subdirectory(game)

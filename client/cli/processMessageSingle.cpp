@@ -60,6 +60,8 @@ bool t_chessCli::processMessageSingle(const t_message &message)
                   oldPos = newMessage.movePiece.oldPos;
                }
 
+
+
                sharedData.clientBuffer.push_front(newMessage);
             }
             sharedData.clientCondition.notify_one();
@@ -74,12 +76,23 @@ bool t_chessCli::processMessageSingle(const t_message &message)
 
             temp[2] = pos.x + 'a';
             temp[3] = '8' - pos.y;
-            temp[4] = 0;
+
+
+               temp[4] = 0;
 
             std::cout<<temp<<std::endl;
             fprintf(blah, "position moves %s\ngo\n",temp);
             fflush(blah);
          }
+         
+         bool promotion = chessEngine.inPromotion();
+         if (promotion)
+         {
+            oldProPos = oldPos;
+            newProPos = pos;
+         }
+
+
 
       }
 
@@ -116,6 +129,76 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          }
       }
 
+      if (status == PLAYING_ONE)
+      {
+         if (!chessEngine.inPromotion())
+            std::cout<<"Why am I recieving a pawn promotion when I am not in promotion..."<<std::endl;
+         int type = 0;
+
+         std::vector<t_message> messageBuffer = chessEngine.boardClickedSingle(message);
+
+         {
+            boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
+
+            BOOST_FOREACH(t_message &newMessage, messageBuffer)
+            {
+               if (newMessage.id == CHANGE_ICON)
+               {
+                  type =  newMessage.changeIcon.type;
+               }
+               sharedData.clientBuffer.push_front(newMessage);
+            }
+            sharedData.clientCondition.notify_one();
+         }
+
+         t_myVector2 oldPos = oldProPos;
+         t_myVector2 pos = newProPos;
+
+            char temp[5];
+            temp[0] = oldPos.x + 'a';
+            temp[1] = '8' - oldPos.y;
+
+            temp[2] = pos.x + 'a';
+            temp[3] = '8' - pos.y;
+
+            if (type)
+            {
+               int id = type%8;
+
+               char ch;
+
+               switch (id)
+               {
+               case 2:
+                  ch = 'r';
+                  break;
+
+               case 3:
+                  ch = 'n';
+                  break;
+
+               case 4:
+                  ch = 'b';
+                  break;
+
+               case 6:
+                  ch = 'q';
+                  break;
+
+               default:
+                  std::cout<<"WTF, a bad move"<<std::endl;
+               }
+
+               temp[4] = ch;
+               temp[5] = 0;
+            }
+
+            
+
+            std::cout<<temp<<std::endl;
+            fprintf(blah, "position moves %s\ngo\n",temp);
+            fflush(blah);
+      }
       else
       {
          t_message newMessage;
@@ -240,7 +323,7 @@ bool t_chessCli::processMessageSingle(const t_message &message)
             sharedData.clientCondition.notify_one();
          }
       }
-      
+
 
 
       break;
@@ -357,8 +440,10 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          printf("Starting the game\n");
          fprintf(blah,"ucinewgame\nposition startpos\n");
 
-         if(uciTurn)
+         if (uciTurn)
+         {
             fprintf(blah,"go\n");
+         }
 
          fflush(blah);
       }
@@ -379,7 +464,46 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          pos.x = pch[2] - 'a';
          pos.y = '8' - pch[3];
 
-         std::vector<t_message> buffer = chessEngine.insertMove(oldPos,pos);
+         int type = 0;
+
+         if (pch[4] != 0)
+         {
+            bool turn = chessEngine.getTurn();
+
+            switch (pch[4])
+            {
+            case 'n':
+               type = 3 + turn * 8;
+               break;
+
+            case 'r':
+               type = 2 + turn * 8;
+               break;
+
+            case 'q':
+               type = 6 + turn * 8;
+               break;
+
+            case 'b':
+               type = 4 + turn * 8;
+               break;
+            }
+         }
+
+
+         std::vector<t_message> buffer;
+
+         if (type)
+         {
+            buffer = chessEngine.insertMove(oldPos,pos,type);
+
+         }
+
+         else
+
+         {
+            buffer = chessEngine.insertMove(oldPos,pos);
+         }
 
          {
             boost::unique_lock<boost::mutex> lock(sharedData.clientMutex);
@@ -389,8 +513,9 @@ bool t_chessCli::processMessageSingle(const t_message &message)
                sharedData.clientBuffer.push_front(newMessage);
             }
          }
+
          sharedData.clientCondition.notify_one();
-         std::cout<<"The positions are "<<oldPos<<" and "<<pos<<std::endl;
+         std::cout<<"The positions are "<<oldPos<<" and "<<pos<<" with a type of "<<type<<std::endl;
       }
 
       //std::cout<<"I cannot read "<<pch<<std::endl;
@@ -422,6 +547,7 @@ bool t_chessCli::processMessageSingle(const t_message &message)
          fflush(blah);
 
       }
+
       std::cout<<"Cli told to quit"<<std::endl;
       {
          boost::unique_lock<boost::mutex> lock(sharedData.netMutex);

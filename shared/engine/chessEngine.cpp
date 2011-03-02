@@ -67,3 +67,9 @@ void t_chessEngine::reset()
       }
    }
 }
+
+bool t_chessEngine::inPromotion()
+{
+   return inPawnPromotion;
+}
+

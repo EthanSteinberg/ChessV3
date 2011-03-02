@@ -1,6 +1,7 @@
 #ifndef CHESS_CLI_H_INCLUDED
 #define CHESS_CLI_H_INCLUDED
 
+
 #include <boost/utility.hpp>
 #include <iostream>
 #include <vector>
@@ -39,6 +40,9 @@ private:
 
    bool uciTurn;
    std::string uciLocation;
+
+   t_myVector2 oldProPos;
+   t_myVector2 newProPos;
 
    int in[2];
    FILE *blah;

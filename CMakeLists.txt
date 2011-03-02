@@ -8,7 +8,7 @@ endif()
 
 set(CMAKE_BUILD_TYPE Debug)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-Wall -march=native -std=c++0x  -g -O0 -Wshadow  -lpthread -pedantic")
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -march=native -std=c++0x  -g -O0 -Wshadow  -lpthread -pedantic -Winvalid-pch -include precomp.h")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")	
 
@@ -31,8 +31,15 @@ include_directories(${GTK2_INCLUDE_DIRS} /usr/include/freetype2)
 
 
 include_directories(shared)
+include_directories(${CMAKE_SOURCE_DIR})
+
+include(PCH_GCC4_v3)
+ADD_PCH_RULE(precomp.h HEADER)
+
+add_executable(Precomping ${HEADER} test.cpp)
+#target_link_libraries(Precomping ${GTK2_LIBRARIES} ${Boost_LIBRARIES})
+#target_link_libraries(Precomping ${Boost_LIBRARIES})
 
 add_subdirectory(client) 
 add_subdirectory(server) 
 add_subdirectory(shared) 
-
